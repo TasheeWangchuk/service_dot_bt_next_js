@@ -1,4 +1,5 @@
 "use client";
+import Navbar from "@/app/components/NavBar";
 import React, { useState } from "react";
 
 export default function Post() {
@@ -245,11 +246,19 @@ export default function Post() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
+      {/* Navbar */}
+      <Navbar scrolled={false} />
+
+    <div className="sticky min-h-screen  bg-[url('/Artboard.png')] bg-cover bg-center py-8">
       <div className="max-w-4xl mx-auto p-6">
-        <h1 className="text-3xl font-bold text-orange-500 mb-6 text-center">
-          Post a Job
-        </h1>
+      <h1 className="text-3xl font-bold text-orange-500 mb-2">
+         Tell us what you <span className="text-gray-800">NEED!</span>
+       </h1>
+       <p className="text-sm text-gray-500">
+         Hire Great Freelancers, Post Opportunities here. You will get the
+         responses at an instant's notice.
+       </p>
         <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-md">
           {/* Job Title */}
           <div>
@@ -615,6 +624,7 @@ export default function Post() {
           </div>
         </form>
       </div>
+    </div>
     </div>
   );
 }
