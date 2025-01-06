@@ -25,16 +25,11 @@ const Categories: React.FC = () => {
   };
 
   return (
-    <section id="category" className="relative py-10 px-4 bg-cover bg-center"
-      style={{
-        backgroundImage: "url('/Artboard.png')",
-      }}
-    >
-      {/* Overlay */}
+    <section id="category" className="relative py-10 ml-10 mr-10 ">
 
       {/* Content */}
       <div className="relative max-w-6xl mx-auto text-center z-10">
-        <h2 className="text-4xl font-bold text-gray-800 mb-8">
+        <h2 className="text-3xl font-extrabold text-center mb-10">
           Choose Different <span className="text-orange-500">Category</span>
         </h2>
 
@@ -43,7 +38,7 @@ const Categories: React.FC = () => {
           {categories.map((category, index) => (
             <div
               key={index}
-              className="relative group bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer transform hover:scale-105 transition-transform duration-300"
+              className="relative group rounded-lg shadow-lg overflow-hidden cursor-pointer transform hover:scale-105 transition-transform duration-300"
             >
               <img
                 src={category.img}

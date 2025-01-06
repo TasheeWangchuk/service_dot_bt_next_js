@@ -42,7 +42,7 @@ const Hero: React.FC = () => {
 
         {/* Content */}
         <div className="relative z-10 text-center px-6">
-          <h1 className="text-5xl md:text-6xl font-bold text-orange-500 leading-snug">
+          <h1 className="text-5xl md:text-6xl font-extrabold text-orange-500 leading-snug">
             Are you looking for <br />
             <span className="text-orange-600">Freelancers?</span>
           </h1>
