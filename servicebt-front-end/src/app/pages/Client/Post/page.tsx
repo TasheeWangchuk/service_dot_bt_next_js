@@ -665,7 +665,7 @@ export default function Post() {
   });
 
   const categories: { [key: string]: string[] } = {
-    'Web Development': [
+    'Software Development': [
     'Front-end Development',
     'Back-end Development',
     'Full-stack Development',

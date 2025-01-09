@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import Navbar from "@/app/components/NavBar";
-import Footer from "@/app/components/Footer";
+import Navbar from "@/app/components/Shared/NavBar";
+import Footer from "@/app/components/Shared/Footer";
 import { AiOutlineEdit, AiOutlineSave, AiOutlineMessage } from "react-icons/ai";
 import { BsFillPersonFill } from "react-icons/bs";
 

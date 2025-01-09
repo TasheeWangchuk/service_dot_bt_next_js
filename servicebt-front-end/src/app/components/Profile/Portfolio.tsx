@@ -62,7 +62,7 @@ const Portfolio: React.FC = () => {
     <div className=" bg-gray-100 h-auto">
       {/* Header Section */}
       <div className="flex items-center justify-between border-b pb-2 mb-4">
-        <h1 className="text-xl font-medium">Portfolio</h1>
+        <h1 className="text-xl font-medium text-gray-800">Portfolio</h1>
         <button
           onClick={() => setIsEditing(true)}
           className="flex items-center text-orange-500 hover:text-orange-600 space-x-1"

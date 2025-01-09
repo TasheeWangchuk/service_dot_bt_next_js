@@ -21,9 +21,9 @@ const Skills: React.FC = () => {
   };
 
   return (
-    <div className="p-6 rounded-lg shadow-md">
+    <div className="p-6 rounded-lg bg-gray-50">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold">Skills</h2>
+        <h2 className="text-lg font-semibold text-gray-800">Skills</h2>
         <button
           onClick={toggleEditing}
           className="text-orange-500 font-medium hover:underline"
@@ -31,7 +31,7 @@ const Skills: React.FC = () => {
           {isEditing ? 'Done' : '+ Edit'}
         </button>
       </div>
-      <div className="flex flex-wrap gap-4 border rounded-md p-4">
+      <div className="flex flex-wrap gap-4 rounded-md p-4">
         {skills.map((skill, index) => (
           <div
             key={index}

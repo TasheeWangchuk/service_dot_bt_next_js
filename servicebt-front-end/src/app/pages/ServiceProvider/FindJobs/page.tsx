@@ -1,7 +1,7 @@
 // "use client";
 // import React, { useState } from "react";
-// import Footer from "@/app/components/Footer";
-// import Navbar from "@/app/components/NavBar";
+// import Footer from "@/app/components/Shared/Footer";
+// import Navbar from "@/app/components/Shared/NavBar";
 
 // // Dummy Job Data
 // const jobData = [
@@ -243,8 +243,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Footer from "@/app/components/Footer";
-import Navbar from "@/app/components/NavBar";
+import Footer from "@/app/components/Shared/Footer";
+import Navbar from "@/app/components/Shared/NavBar";
 import axios from "axios";
 
 const FindJobsPage = () => {

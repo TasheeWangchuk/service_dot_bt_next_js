@@ -1,7 +1,7 @@
 "use client"
 import React, { useState, useEffect } from "react";
-import Navbar from '@/app/components/NavBar';
-import Footer from '@/app/components/Footer';
+import Navbar from '@/app/components/Shared/NavBar';
+import Footer from '@/app/components/Shared/Footer';
 import Hero from '@/app/components/Landing/Hero';
 import Categories from '@/app/components/Landing/Category';
 import Portfolio from '@/app/components/Landing/Portfolio';

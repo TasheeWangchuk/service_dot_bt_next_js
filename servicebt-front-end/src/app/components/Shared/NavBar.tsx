@@ -169,7 +169,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import NotificationDropdown from "./Profile/NotificationDropdown";
+import NotificationDropdown from "../Profile/NotificationDropdown";
 import Head from "next/head";
 
 const Navbar: React.FC = () => {
@@ -225,6 +225,9 @@ const Navbar: React.FC = () => {
           </Link>
           <Link href="#" className="hover:text-yellow-300">
             Find Freelancers
+          </Link>
+          <Link href="/pages/about" className="hover:text-yellow-300">
+            About
           </Link>
 
           {/* Notification Dropdown */}
