@@ -1,12 +1,12 @@
 "use client"
 import React, { useState, useEffect } from "react";
-import Navbar from '@/app/components/Shared/NavBar';
-import Footer from '@/app/components/Shared/Footer';
-import Hero from '@/app/components/Landing/Hero';
-import Categories from '@/app/components/Landing/Category';
-import Portfolio from '@/app/components/Landing/Portfolio';
+import Navbar from '@/components/Shared/NavBar';
+import Footer from '@/components/Shared/Footer';
+import Hero from '@/components/Landing/Hero';
+import Categories from '@/components/Landing/Category';
+import Portfolio from '@/components/Landing/Portfolio';
 // import HeroTwo from '@/app/components/Landing/HeroTwo';
-import Sidebar from '@/app/components/Landing/Sidebar';
+import Sidebar from '@/components/Landing/Sidebar';
 //import LoadingPage from "./components/Loading/loadingPage";
 
 const LandingPage: React.FC = () => {
