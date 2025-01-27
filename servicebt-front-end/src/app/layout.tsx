@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import React, { useState, useEffect } from "react";
 import Footer from "../components/Shared/Footer";
+import { AuthProvider } from "./context/AuthContext";
 
 // Custom fonts
 const geistSans = localFont({
@@ -53,12 +54,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300`}
       >
-
+<AuthProvider >
          {/* Main Content */}
         <main className="min-h-screen">{children}</main>
 
         {/* Footer */}
+        </AuthProvider>
       </body>
     </html>
   );
 }
+

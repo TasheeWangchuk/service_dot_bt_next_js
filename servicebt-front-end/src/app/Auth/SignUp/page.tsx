@@ -6,7 +6,6 @@ import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
 
-
 const SignUp: React.FC = () => {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -17,10 +16,9 @@ const SignUp: React.FC = () => {
     password: "",
     confirmPassword: "",
     role: "",
-    termsCheck: true,
+    termsCheck: false,
   });
 
-  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -82,26 +80,15 @@ const SignUp: React.FC = () => {
       role,
       terms_check: termsCheck,
     };
+    
 
-    console.log("payload ", payload)
+    // console.log("payload ", payload)
 
     try {
-
-      // axios.post("https://service-bhutan-api.onrender.com/api/v1/users/register/", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify(payload)
-      // }).then((response) => {
-      //   console.log("repsonse ", response)
-      // }).catch((error) => {
-      //   console.log("error ", error)
-      // })
-
       const response = await axios.post(
         "https://service-bhutan-api.onrender.com/api/v1/users/register/",
-        JSON.stringify(payload),
+        // JSON.stringify(payload),
+        payload,
         {
           headers: {
         "Content-Type": "application/json",
@@ -111,7 +98,7 @@ const SignUp: React.FC = () => {
 
       console.log("Registration successful:", response.data);
       toast.success("Registration successful! Check your email to verify your account.");
-      router.push("/SignUp");
+      router.push("/Auth/SignIn");
 
       // const response = await axios.post(
       //   `https://service-bhutan-api.onrender.com/api/v1/users/register/`,
@@ -126,8 +113,10 @@ const SignUp: React.FC = () => {
       // toast.success("Registration successful! Check your email to verify your account.");
       // router.push("/SignUp"); 
     } catch (error: any) {
+      console.error("Full Error Response:", error.response?.data || "No response data");
       const errorMessage =
-        error.response?.data?.message || "Failed to register. Please try again.";
+      error.response?.data?.message || "Failed to register. Please try again.";
+      // console.log("error ", error)  
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -136,7 +125,7 @@ const SignUp: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-orange-400 via-orange-600 to-pink-400 p-3 md:p-6">
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar />
 
       <div className="container mx-auto flex justify-center items-center max-w-5xl gap-6 py-6">
         {/* Form */}
@@ -249,7 +238,7 @@ const SignUp: React.FC = () => {
               <input
                 type="checkbox"
                 name="termsCheck"
-                id="termsCheck"
+                id="terms_Check"
                 checked={formData.termsCheck}
                 onChange={(e) => setFormData({ ...formData, termsCheck: e.target.checked })}
                 className="h-4 w-4 rounded border-white/30 text-orange-600 focus:ring-orange-500 bg-white/70 transition-colors duration-200"
@@ -281,7 +270,7 @@ const SignUp: React.FC = () => {
             </button>
             <div className="mt-6 text-center text-sm text-gray-500">
           Already have an account?{" "}
-          <a href="/Auth" className="text-orange-600 hover:underline">
+          <a href="/Auth/SignIn" className="text-orange-600 hover:underline">
             Sign in
           </a>
         </div>

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import axios from "axios";
-import Navbar from "@/app/components/Shared/NavBar";
+import Navbar from "@/components/Shared/NavBar";
 
 export default function Post() {
   const [formData, setFormData] = useState<{

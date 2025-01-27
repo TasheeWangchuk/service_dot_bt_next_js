@@ -1,20 +1,35 @@
-// src/app/lib/apiClient.ts
+/**
+ * @file apiClient.tsx
+ * @description This file contains the configuration and setup for the Axios API client used in the servicebt-front-end application.
+ * It also includes request and response interceptors for handling authentication tokens and refreshing tokens when necessary.
+ */
+
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
-  withCredentials: true  // Important for cookie handling
+  baseURL: 'https://service-bhutan-api.onrender.com',
+  withCredentials: true
 });
 
 // Request interceptor
 apiClient.interceptors.request.use(
+
   (config) => {
-    // No need to manually set Authorization header as cookies are automatically sent
+    const tokens = localStorage.getItem('tokens');
+    
+    if (tokens) {
+      try {
+        const { access } = JSON.parse(tokens);
+        if (access) {
+          config.headers.Authorization = `Bearer ${access}`;
+        }
+      } catch (error) {
+        console.error('Failed to parse tokens:', error);
+      }
+    }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 // Response interceptor
@@ -27,14 +42,15 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/refresh/`, {
+        await fetch(`https://service-bhutan-api.onrender.com/api/auth/refresh/`, {
           method: 'POST',
           credentials: 'include',
         });
 
         return apiClient(originalRequest);
       } catch (refreshError) {
-        window.location.href = '/auth/signin';
+        console.error('Refresh Token Error:', refreshError);
+        window.location.href = '/Auth/SignIn';
         return Promise.reject(refreshError);
       }
     }
@@ -42,5 +58,28 @@ apiClient.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+// Existing apiClient code remains the same
+export const initiatePasswordReset = async (email: string) => {
+  try {
+    const response = await apiClient.post('/api/auth/password-reset/', { email });
+    return response.data;
+  } catch (error) {
+    console.error('Password reset initiation failed:', error);
+    throw error;
+  }
+};
+
+export const confirmPasswordReset = async (token: string, newPassword: string) => {
+  try {
+    const response = await apiClient.post('/api/auth/password-reset/confirm/', {
+      token,
+      password: newPassword
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Password reset confirmation failed:', error);
+    throw error;
+  }
+};
 
 export default apiClient;
