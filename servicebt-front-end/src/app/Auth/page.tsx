@@ -14,8 +14,8 @@ const Role: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-500 via-red-500 to-pink-500">
-      <div className="flex items-center justify-center space-x-8 bg-white rounded-lg p-8 shadow-lg text-center max-w-md w-full">
+    <div className="min-h-screen flex items-center justify-center ">
+      <div className="flex items-center justify-center space-x-8 bg-white/30 backdrop-blur-sm  rounded-lg p-8 shadow-lg text-center max-w-md w-full">
         <div className="space-y-9 mt-7 flex-1">
           <h1 className="text-2xl font-bold mb-6 text-gray-800">
             Welcome to Service.bt

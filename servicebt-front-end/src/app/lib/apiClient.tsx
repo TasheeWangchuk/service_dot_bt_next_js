@@ -7,7 +7,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: 'https://service-bhutan-api.onrender.com',
+  baseURL: 'https://service-bhutan-api-o2oc.onrender.com',
   withCredentials: true
 });
 
@@ -42,7 +42,8 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        await fetch(`https://service-bhutan-api.onrender.com/api/auth/refresh/`, {
+        await fetch(`https://service-bhutan-api-o2oc.onrender.com/api/v1/auth/refresh/`, {
+
           method: 'POST',
           credentials: 'include',
         });
@@ -58,7 +59,7 @@ apiClient.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-// Existing apiClient code remains the same
+
 export const initiatePasswordReset = async (email: string) => {
   try {
     const response = await apiClient.post('/api/auth/password-reset/', { email });

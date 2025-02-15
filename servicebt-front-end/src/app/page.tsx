@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, useEffect } from "react";
-import Navbar from '@/components/Shared/NavBar';
+import Navbar from '@/components/NavBar/NavBar';
 import Footer from '@/components/Shared/Footer';
 import Hero from '@/components/Hero/Hero';
 import Categories from '@/components/Hero/Category';
@@ -35,12 +35,6 @@ const LandingPage: React.FC = () => {
       <Navbar />
       <div
       className="sticky"
-      style={{
-        backgroundImage: "url('/Artboard.png')",
-        backgroundSize: "cover",
-        backgroundAttachment: "fixed",
-        backgroundPosition: "center",
-      }}
     >
       {/* Sidebar for Vertical Line and Dots */}
       <Sidebar />

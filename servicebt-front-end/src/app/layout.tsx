@@ -5,6 +5,8 @@ import "./globals.css";
 import React, { useState, useEffect } from "react";
 import Footer from "../components/Shared/Footer";
 import { AuthProvider } from "./context/AuthContext";
+import LoadingPage from "../components/Shared/Loading"; 
+import PageLoader from "../components/Shared/PageLoader";
 
 // Custom fonts
 const geistSans = localFont({
@@ -17,6 +19,7 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
   weight: "100 900",
 });
+
 
 export default function RootLayout({
   children,
@@ -53,12 +56,14 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300`}
+        style={{
+          zoom: "0.8", 
+        }}
       >
-<AuthProvider >
-         {/* Main Content */}
-        <main className="min-h-screen">{children}</main>
-
-        {/* Footer */}
+        <AuthProvider>
+          <PageLoader>
+            <main className="min-h-screen">{children}</main>
+          </PageLoader>
         </AuthProvider>
       </body>
     </html>

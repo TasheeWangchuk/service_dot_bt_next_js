@@ -1,283 +1,214 @@
-"use client";
-import apiClient from "@/app/lib/apiClient";
+'use client';
+
 import React, { useState, useEffect } from "react";
-import Navbar from "@/components/Shared/NavBar";
-import ServicesManager from "@/components/profile/SeviceManager";
-import SkillsManager from "@/components/profile/SkillManager";
-import Portfolio from "@/components/profile/portfolio";
-import Skeleton from "react-loading-skeleton";
 import {
-  Star,
-  MapPin,
-  GraduationCap,
-  ChevronDown,
-  ChevronUp,
-  Camera,
-  Settings,
+  Mail, Phone, MapPin, Heart, MessageCircle, Settings
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ServicesManager from "@/components/profile/SeviceManager";
+import SkillsManager from "@/components/profile/SkillManager";
+import ExperienceManager from "@/components/profile/ExperienceManager";
+import CertificateManager from "@/components/profile/CertificateManager";
+import Portfolio from "@/components/profile/portfolio";
+import apiClient from "@/app/lib/apiClient";
+import Navbar from "@/components/NavBar/NavBar";
+import Link from "next/link";
+import EducationManager from "@/components/profile/EducationManager";
+import { useUserStore } from "@/store/userStore";
+interface UserProfile {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  username: string;
+  profile: {
+    banner: string;
+    profile_picture: string;
+    headline: string;
+    address: string;
+    bio: string;
+  };
+}
 
 const ProfilePage = () => {
-  const [userData, setUserData] = useState<any>(null); // Store user data
-  const [showFullAbout, setShowFullAbout] = useState(false);
-  const [bannerImage, setBannerImage] = useState("/banner.jpg");
-  const [profileImage, setProfileImage] = useState("/Profile_placeholder.png");
+  const [userData, setUserData] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [activeSection, setActiveSection] = useState("overview");
+  const { profile, first_name, last_name, phone, username, email, fetchUserData } = useUserStore();
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await apiClient.get("/api/v1/users/profile/");
-        setUserData(response.data);
-        console.log('respones', response)
+  // useEffect(() => {
+  //   const fetchUserData = async () => {
+  //     try {
+  //       const response = await apiClient.get("/api/v1/users/profile/");
+  //       setUserData(response.data);
+  //       setLoading(false);
+  //     } catch (error) {
+  //       toast.error("Failed to fetch profile data.");
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchUserData();
 
-        setBannerImage(response.data.profile.banner || "/banner.jpg");
-        setProfileImage(response.data.profile.profile_picture || "/Profile_placeholder.png");
+     useEffect(() => {
+        fetchUserData().finally(() => setLoading(false));
+      // }, []);
 
-        setLoading(true);
-      } catch (error) {
-        console.error("Error fetching profile data:", error);
-        setError(true);
-        setLoading(false);
-        toast.error("Failed to load profile data.");
-      }
+    const handleScroll = () => {
+      const sections = document.querySelectorAll('section');
+      const scrollPosition = window.scrollY + 100;
+
+      sections.forEach(section => {
+        const top = section.offsetTop;
+        const height = section.offsetHeight;
+        
+        if (scrollPosition >= top && scrollPosition < top + height) {
+          setActiveSection(section.id);
+        }
+      });
     };
 
-    fetchUserData();
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const uploadImage = async (file: File, type: "profile" | "banner") => {
-    const formData = new FormData();
-    formData.append("image", file);
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    const headerOffset = 80;
+    if (element) {
+      const elementPosition = element.offsetTop;
+      const offsetPosition = elementPosition - headerOffset;
 
-    try {
-      await apiClient.post(`/api/v1/users/upload_${type}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
       });
-      toast.success(`${type === "profile" ? "Profile" : "Banner"} picture updated successfully!`);
-    } catch (error) {
-      console.error(`Failed to update ${type} picture:`, error);
-      toast.error(`Failed to update ${type} picture.`);
     }
   };
-
-  const handleProfileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setProfileImage(URL.createObjectURL(file));
-      uploadImage(file, "profile");
-    }
-  };
-
-  const handleBannerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setBannerImage(URL.createObjectURL(file));
-      uploadImage(file, "banner");
-    }
-  };
-
-  const SkeletonLoader = () => (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
-      <div className="relative h-48">
-        <Skeleton className="w-full h-full" />
-      </div>
-      <div className="max-w-full mx-auto px-4 mt-8">
-        <div className="p-6">
-          {/* Profile Skeleton */}
-          <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-            <Skeleton circle width={96} height={96} />
-            <div className="flex-1">
-              <Skeleton width={200} height={24} />
-              <Skeleton width={150} height={20} className="mt-2" />
-              <Skeleton width={250} height={20} className="mt-2" />
-              <Skeleton width={100} height={20} className="mt-4" />
-            </div>
-          </div>
-
-          {/* About Section Skeleton */}
-          <div className="mt-8 ml-5 mr-5">
-            <Skeleton width={100} height={24} />
-            <Skeleton count={3} height={16} className="mt-2" />
-          </div>
-
-          {/* Location & Education Skeleton */}
-          <div className="mt-8 ml-5 mr-5">
-            <Skeleton width={300} height={20} />
-            <Skeleton width={200} height={20} className="mt-2" />
-          </div>
-
-          {/* Services, Skills, and Portfolio Skeleton */}
-          <div className="mt-6">
-            <Skeleton height={200} />
-          </div>
-          <div className="mt-2">
-            <Skeleton height={200} />
-          </div>
-          <div className="mt-4">
-            <Skeleton height={200} />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  if (loading) {
-    return <SkeletonLoader />;
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-red-500">
-        Failed to load profile. Please try again later :( <br />
-        Try logging out and logging in again.
-
-
-      </div>
-    );
-  }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white/10 backdrop-blur-sm">
       <Navbar />
-      <ToastContainer position="top-center" />
-
-      {/* Banner Section */}
-      <div className="relative h-48 bg-gradient-to-r from-blue-500 to-purple-600 mt-16">
+      <div className="relative w-full h-72 md:h-96 bg-gradient-to-r from-blue-500 to-purple-600">
         <img
-          src={bannerImage}
+          src={profile? profile.banner || "/banner.jpg":"/banner.jpg"}
           alt="Profile Banner"
           className="w-full h-full object-cover"
         />
-        <div className="absolute top-2 right-2 flex items-center gap-2">
-          <label
-            className="bg-white p-2 rounded-full shadow-md cursor-pointer hover:bg-gray-50 transition-colors"
-            title="Edit Banner"
-          >
-            <Camera className="w-5 h-5 text-gray-600" />
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleBannerChange}
-            />
-          </label>
-          <a
-            href="/ServiceProvider/profile-settings"
-            className="bg-white p-2 rounded-full shadow-md cursor-pointer hover:bg-gray-50 transition-colors group"
-            title="Profile Settings"
-          >
-            <Settings className="w-5 h-5 text-gray-600 group-hover:rotate-45 transition-transform duration-300" />
-          </a>
-        </div>
       </div>
 
-      {/* Profile Section */}
-      <div className="max-w-full mx-auto px-4 mt-8">
-        <div className="p-6">
-          <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-            <div className="relative">
-              <img
-                src={profileImage}
-                alt="Profile"
-                className="w-24 h-24 rounded-full border-4 border-white shadow-lg"
-              />
-              <label
-                className="absolute bottom-0 right-0 bg-white p-2 rounded-full shadow-md cursor-pointer hover:bg-gray-50 transition-colors"
-                title="Edit Profile Picture"
-              >
-                <Camera className="w-4 h-4 text-gray-600" />
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleProfileChange}
-                />
-              </label>
+      {/* Profile Header */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 md:-mt-4 relative">
+        <div className="flex flex-col md:flex-row items-center md:items-end gap-4 bg-white/70 backdrop-blur-md p-6 shadow-lg rounded-lg">
+          <Avatar className="w-28 h-28 md:w-32 md:h-32 border-4 border-white shadow-xl -mt-12 md:-mt-16">
+            <AvatarImage src={profile ? profile.profile_picture || "/Profile_placeholder.png" : "/Profile_placeholder.png"} />
+            <AvatarFallback className="text-2xl">
+              {first_name?.[0]}
+            </AvatarFallback>
+          </Avatar>
+          
+          <div className="flex-1 text-center md:text-left">
+            <h1 className="text-xl md:text-2xl font-bold text-gray-700">
+              {first_name} {last_name} <span className="text-gray-500 text-sm">@ {username}</span>
+            </h1>
+            <p className="text-black text-sm font-semibold md:text-lg">{profile? profile.headline || "":""}</p>
+            <div className="flex items-center gap-2 text-gray-700 text-sm mt-2">
+              <MapPin className="w-4 h-4" /> 
+              <span>{profile? profile.address || "Location not provided":"Location not provided"}</span>
             </div>
-            <div className="flex-1">
-              <h1 className="text-3xl font-bold text-gray-800">
-                {userData.first_name} {userData.last_name}
-              </h1>
-              <p className="text-gray-600">@{userData.username}</p>
-              <p className="text-gray-700 mt-2 font-semibold">{userData.profile.headline}</p>
-              <div className="flex items-center gap-4 mt-4">
-                <div className="flex items-center">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star
-                      key={star}
-                      className="w-5 h-5 text-orange-500"
-                      fill="currentColor"
-                    />
-                  ))}
-                </div>
-                <span className="text-gray-600 font-medium ml-16 ">
-                  {userData.projectsCompleted} projects completed
-                </span>
-                <span className="font-semibold text-orange-600 ml-10">
-                  Service Rate: Nu. {userData.Rate}
-                </span>
+            <div className="flex items-center gap-4 text-gray-700 text-sm mt-2">
+              <div className="flex items-center gap-2">
+                <Mail className="w-4 h-4" /> <span>{email}</span>
+              </div>
+              <div className="flex items-center gap-2 text-gray-700">
+                <Phone className="w-4 h-4" /> 
+                <span>{phone || "Phone not available"}</span>
               </div>
             </div>
           </div>
-
-          {/* About Section */}
-          <div className="mt-8 ml-5 mr-5">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">About</h2>
-            {userData?.profile.bio ? (
-              <p className="text-gray-700">
-                {showFullAbout ? userData.profile.bio : `${userData.profile.bio.slice(0, 150)}...`}
-                <button
-                  onClick={() => setShowFullAbout(!showFullAbout)}
-                  className="ml-2 text-blue-600 hover:text-blue-800"
-                >
-                  {showFullAbout ? (
-                    <span className="flex items-center">
-                      Less <ChevronUp className="w-4 h-4 ml-1" />
-                    </span>
-                  ) : (
-                    <span className="flex items-center">
-                      More <ChevronDown className="w-4 h-4 ml-1" />
-                    </span>
-                  )}
-                </button>
-              </p>
-            ) : (
-              <p className="text-gray-600">No bio available.</p>
-            )}
-          </div>
-
-
-          {/* Location & Education */}
-          <div className="mt-8 ml-5 mr-5">
-            <div className="flex items-center gap-2 text-gray-600">
-              <MapPin className="w-5 h-5" />
-              <span>{userData.profile.address}</span>
-            </div>
-            <div className="flex items-center gap-2 text-gray-600 mt-2">
-              <GraduationCap className="w-5 h-5" />
-              <span>{userData.education}</span>
-            </div>
-          </div>
-
-          {/* Services, Skills, and Portfolio */}
-          <div className="mt-6">
-            <ServicesManager />
-          </div>
-          <div className="mt-2">
-            <SkillsManager />
-          </div>
-          <div className="mt-4">
-            <Portfolio />
+          
+          <div className="flex gap-3">
+            <Button className="bg-blue-600 text-white hover:bg-blue-700">
+              <MessageCircle className="w-4 h-4 mr-2" /> Hire
+            </Button>
+            <Button variant="outline" className="border-gray-300 hover:bg-gray-100">
+              <Heart className="w-4 h-4 mr-2" /> Follow
+            </Button>
+            <Link href="profile-settings">
+              <Button 
+                variant="outline" 
+                className="border-gray-300 hover:bg-gray-100"
+                title="Profile Settings"
+              >
+                <Settings className="w-4 h-4" />
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
+
+      {/* Navigation Tabs - Sticky */}
+      <div className="sticky top-0 z-50 bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <nav className="flex space-x-8 overflow-x-auto">
+            {["overview", "Services & Skills", "Experience", "portfolio", "Certificates", "Education"].map((section) => (
+              <button
+                key={section}
+                onClick={() => scrollToSection(section)}
+                className={`py-4 px-1 font-medium text-sm border-b-2 whitespace-nowrap transition-colors ${
+                  activeSection === section
+                    ? "border-blue-500 text-blue-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                }`}
+              >
+                {section.charAt(0).toUpperCase() + section.slice(1)}
+              </button>
+            ))}
+          </nav>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        <section id="overview" className="bg-white rounded-xl shadow-sm p-6">
+          <h2 className="text-xl font-semibold text-gray-800">About Me</h2>
+          <p className="text-gray-600 leading-relaxed mt-2">
+            {profile?profile.bio || "No bio available.":""}
+          </p>
+        </section>
+        
+
+        <section id="Services & Skills" className="bg-white rounded-xl shadow-sm p-6">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Services</h2>
+          <ServicesManager />
+          <div className="mt-4 mb-4">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Skills</h2>
+          <SkillsManager/></div>
+        </section>
+
+        <section id="Experience" className="bg-white rounded-xl shadow-sm p-6">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Experience</h2>
+          <ExperienceManager/>
+        </section>
+        <section id="portfolio" className="bg-white rounded-xl shadow-sm p-6">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Portfolio</h2>
+          <Portfolio />
+        </section>
+        <section id="Certificates" className="bg-white rounded-xl shadow-sm p-6">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Certificates</h2>
+          <CertificateManager/>
+        </section>
+        <section id="Education" className="bg-white rounded-xl shadow-sm p-6">
+        <h2 className="text-xl font-semibold text-gray-800">Education</h2>
+        <div><EducationManager/></div>
+        </section>
+      </main>
+
+      <ToastContainer position="top-right" />
     </div>
   );
 };
 
 export default ProfilePage;
-

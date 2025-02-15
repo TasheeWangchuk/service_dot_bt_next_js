@@ -5,7 +5,7 @@ import Image from 'next/image';
 import FAQAccordion from '@/components/AboutUsBox/FAQAccordion';
 import FeedbackForm from '@/components/AboutUsBox/FeedbackForm';
 import TabSection from '@/components/AboutUsBox/TabSection';
-import Navbar from '@/components/Shared/NavBar';
+import Navbar from '@/components/NavBar/NavBar';
 import Footer from '@/components/Shared/Footer';
 
 export default function AboutPage() {

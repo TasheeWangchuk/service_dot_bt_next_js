@@ -86,7 +86,7 @@ const SignUp: React.FC = () => {
 
     try {
       const response = await axios.post(
-        "https://service-bhutan-api.onrender.com/api/v1/users/register/",
+        "https://service-bhutan-api-o2oc.onrender.com/api/v1/users/register/",
         // JSON.stringify(payload),
         payload,
         {
@@ -98,10 +98,10 @@ const SignUp: React.FC = () => {
 
       console.log("Registration successful:", response.data);
       toast.success("Registration successful! Check your email to verify your account.");
-      router.push("/Auth/SignIn");
+      router.push("/Auth/Verification-pending");
 
       // const response = await axios.post(
-      //   `https://service-bhutan-api.onrender.com/api/v1/users/register/`,
+      //   `https://service-bhutan-api-o2oc.onrender.com/api/v1/users/register/`,
       //   JSON.stringify(payload),
       //   { headers: { "Content-Type": "application/json" } }
       // ).then((response) => {
@@ -124,16 +124,16 @@ const SignUp: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-orange-400 via-orange-600 to-pink-400 p-3 md:p-6">
-      <ToastContainer position="top-right" autoClose={5000} hideProgressBar />
+    <div className="min-h-screen p-3 md:p-6">
+      <ToastContainer position="top-center" autoClose={5000} hideProgressBar />
 
       <div className="container mx-auto flex justify-center items-center max-w-5xl gap-6 py-6">
         {/* Form */}
-        <div className="w-full lg:w-1/2 backdrop-blur-md bg-white/30 rounded-2xl shadow-2xl p-5 md:p-6 border border-white/20 animate-fade-in">
-          <h1 className="text-2xl md:text-3xl font-bold text-white mb-1">
+        <div className="w-full lg:w-1/2 bg-white/30 backdrop-blur-sm  rounded-2xl shadow-2xl p-5 md:p-6 border border-white/20 animate-fade-in">
+          <h1 className="text-2xl md:text-3xl font-bold text-orange-500 mb-1">
             Join as a {formData.role}
           </h1>
-          <p className="text-white/80 mb-4 text-sm md:text-base">
+          <p className="text-gray-500 mb-4 text-sm md:text-base">
             Sign up and start exploring opportunities!
           </p>
 
@@ -146,7 +146,7 @@ const SignUp: React.FC = () => {
                   placeholder="First Name"
                   value={formData.firstName}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 bg-white/70 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800 placeholder-gray-500 backdrop-blur-sm transition-all duration-200 hover:bg-white/80"
+                  className="w-full px-3 py-2 bg-blue-50 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800 placeholder-gray-500 backdrop-blur-sm transition-all duration-200 hover:bg-white/80"
                 />
               </div>
               <div className="w-full md:w-1/2">
@@ -156,7 +156,7 @@ const SignUp: React.FC = () => {
                   placeholder="Last Name"
                   value={formData.lastName}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 bg-white/70 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800 placeholder-gray-500 backdrop-blur-sm transition-all duration-200 hover:bg-white/80"
+                  className="w-full px-3 py-2 bg-blue-50 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800 placeholder-gray-500 backdrop-blur-sm transition-all duration-200 hover:bg-white/80"
                 />
               </div>
             </div>
@@ -167,7 +167,7 @@ const SignUp: React.FC = () => {
               placeholder="Email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-3 py-2 bg-white/70 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800 placeholder-gray-500 backdrop-blur-sm transition-all duration-200 hover:bg-white/80"
+              className="w-full px-3 py-2 bg-blue-50 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800 placeholder-gray-500 backdrop-blur-sm transition-all duration-200 hover:bg-white/80"
             />
 
             <input
@@ -176,7 +176,7 @@ const SignUp: React.FC = () => {
               placeholder="Phone Number"
               value={formData.phone}
               onChange={handleChange}
-              className="w-full px-3 py-2 bg-white/70 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800 placeholder-gray-500 backdrop-blur-sm transition-all duration-200 hover:bg-white/80"
+              className="w-full px-3 py-2 bg-blue-50 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800 placeholder-gray-500 backdrop-blur-sm transition-all duration-200 hover:bg-white/80"
             />
 
             <input
@@ -185,7 +185,7 @@ const SignUp: React.FC = () => {
               placeholder="Citizen ID"
               value={formData.cid}
               onChange={handleChange}
-              className="w-full px-3 py-2 bg-white/70 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800 placeholder-gray-500 backdrop-blur-sm transition-all duration-200 hover:bg-white/80"
+              className="w-full px-3 py-2 bg-blue-50 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800 placeholder-gray-500 backdrop-blur-sm transition-all duration-200 hover:bg-white/80"
             />
 
             <div className="relative group">
@@ -195,7 +195,7 @@ const SignUp: React.FC = () => {
                 placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full px-3 py-2 bg-white/70 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800 placeholder-gray-500 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 pr-10"
+                className="w-full px-3 py-2 bg-blue-50 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800 placeholder-gray-500 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 pr-10"
               />
               <button
                 type="button"
@@ -241,9 +241,9 @@ const SignUp: React.FC = () => {
                 id="terms_Check"
                 checked={formData.termsCheck}
                 onChange={(e) => setFormData({ ...formData, termsCheck: e.target.checked })}
-                className="h-4 w-4 rounded border-white/30 text-orange-600 focus:ring-orange-500 bg-white/70 transition-colors duration-200"
+                className="h-4 w-4 rounded border-white/30 text-orange-600 focus:ring-orange-500 bg-blue-200 transition-colors duration-200"
               />
-              <label htmlFor="termsCheck" className="ml-2 text-sm text-white cursor-pointer group-hover:text-white/90 transition-colors duration-200">
+              <label htmlFor="termsCheck" className="ml-2 text-sm text-orange-600 cursor-pointer group-hover:text-white/90 transition-colors duration-200">
                 I agree to the terms and conditions
               </label>
             </div>

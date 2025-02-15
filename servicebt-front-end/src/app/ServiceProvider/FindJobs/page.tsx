@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Footer from "@/components/Shared/Footer";
-import Navbar from "@/components/Shared/NavBar";
+import Navbar from "@/components/NavBar/NavBar";
 
 // Dummy Job Data
 const jobData = [

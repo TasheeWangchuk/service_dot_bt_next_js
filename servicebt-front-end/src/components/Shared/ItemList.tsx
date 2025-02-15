@@ -71,7 +71,7 @@ const ItemList: React.FC<ItemListProps> = ({
   return (
     <div className={`p-6 bg-gray-100 rounded-md ${className}`}>
       <div className="flex items-center justify-between mb-8">
-        <h2 className="text-2xl font-bold text-gray-800">{title}</h2>
+        {/* <h2 className="text-xl font-bold text-gray-800">{title}</h2> */}
         <button
           onClick={() => setIsEditing(!isEditing)}
           className="flex items-center px-4 py-2 text-sm font-medium transition-colors rounded-lg
