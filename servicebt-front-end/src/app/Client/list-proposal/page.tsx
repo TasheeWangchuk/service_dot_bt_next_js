@@ -42,32 +42,8 @@ const ClientProposals = ({ jobId }: { jobId: number }) => {
   useEffect(() => {
     const fetchProposals = async () => {
       try {
-       
-        const dummyData: Proposal[] = [
-          {
-            proposal_id: 1,
-            bid_amount: 500,
-            status: "PENDING",
-            cover_letter: "I am an experienced developer with expertise in React and Node.js. I have completed similar projects in the past and can deliver high-quality results within the specified timeframe. I would love to discuss this project in detail and understand your specific requirements better.",
-            skills: [
-              { name: "React" },
-              { name: "Node.js" },
-              { name: "TypeScript" },
-              { name: "MongoDB" }
-            ],
-            freelancer: {
-              id: 1,
-              username: "johndev",
-              full_name: "Sonam Dorji",
-              avatar_url: "/Profile_placeholder.png",
-              rating: 4.8,
-              completed_jobs: 25
-            },
-            created_at: "2024-02-06T10:30:00Z",
-            estimated_duration: "2 weeks"
-          }
-        ];
-        setProposals(dummyData);
+        const response = await apiClient.get(`/api/v1/proposals/`);
+        setProposals(response.data);
       } catch (error) {
         console.error("Error fetching proposals:", error);
       }

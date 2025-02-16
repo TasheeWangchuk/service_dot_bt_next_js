@@ -1,690 +1,200 @@
 "use client";
-import React, { useState } from "react";
-import Footer from "@/components/Shared/Footer";
-import Navbar from "@/components/NavBar/NavBar";
+import React, { useEffect, useState } from 'react';
+import { Search, Briefcase, Clock, MapPin, DollarSign, Users, AlertCircle, Send } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import apiClient from '@/app/lib/apiClient';
+import Navbar from '@/components/NavBar/NavBar';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
-// Dummy Job Data
-const jobData = [
-  {
-    id: 1,
-    title: "Web Developer Needed",
-    description:
-      "Build and maintain a fully responsive e-commerce platform for our brand.",
-    budget: "BTN 20k",
-    avgBid: "Avg Bid",
-  },
-  {
-    id: 2,
-    title: "Graphic Designer for Logo",
-    description:
-      "Design a professional logo for our startup. Experience with vector graphics is preferred.",
-    budget: "BTN 15k",
-    avgBid: "Avg Bid",
-  },
-  {
-    id: 3,
-    title: "SEO Expert for Website",
-    description:
-      "Improve website SEO rankings and optimize on-page content for search engines.",
-    budget: "BTN 25k",
-    avgBid: "Avg Bid",
-  },
-  {
-    id: 4,
-    title: "Content Writer Needed",
-    description:
-      "Write high-quality blog posts for our tech company. Topics include AI, ML, and cloud computing.",
-    budget: "BTN 12k",
-    avgBid: "Avg Bid",
-  },
-  {
-    id: 5,
-    title: "UI/UX Designer",
-    description:
-      "Redesign our mobile app with a focus on usability and a clean design approach.",
-    budget: "BTN 30k",
-    avgBid: "Expert",
-  },
-];
+interface Skill {
+  skill_id: number;
+  name: string;
+}
 
-const FindJobsPage = () => {
-  const [jobs, setJobs] = useState(jobData);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filters, setFilters] = useState({ budgetMin: "", budgetMax: "" });
-  const [error, setError] = useState(""); // To store error messages
+interface Job {
+  job_id: number;
+  title: string;
+  payment_type: string;
+  budget: number;
+  experience_level: string;
+  time_preference: string;
+  description: string;
+  job_category_name: string;
+  location: string;
+  status: string;
+  created_at: string;
+  skills: Skill[];
+  proposals_count: number;
+}
 
-  // Handle Search
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchTerm(value);
-    filterJobs(value, filters.budgetMin, filters.budgetMax);
-  };
+const FindJobs = () => {
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
 
-  // Handle Budget Filtering
-  const handleBudgetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    let updatedValue = value;
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await apiClient.get('/api/v1/jobs/');
+        setJobs(response.data);
+        // if (!response.ok) {
+        //   throw new Error(`HTTP error! status: ${response.status}`);
+        // }
 
-    // If the value is negative and it's for budgetMin, set it to 0
-    if (name === "budgetMin" && parseInt(value) < 0) {
-      updatedValue = "0"; // prevent negative budget
-      setError("Minimum budget cannot be negative.");
-    } else if (name === "budgetMax" && parseInt(value) < 0) {
-      updatedValue = "0"; // prevent negative budget
-      setError("Maximum budget cannot be negative.");
-    } else {
-      setError(""); // Clear error if value is valid
-    }
+        // const contentType = response.headers.get("content-type");
+        // if (!contentType || !contentType.includes("application/json")) {
+        //   throw new TypeError("Received non-JSON response from server");
+        // }
 
-    const updatedFilters = { ...filters, [name]: updatedValue };
-    setFilters(updatedFilters);
-    filterJobs(searchTerm, updatedFilters.budgetMin, updatedFilters.budgetMax);
-  };
+        // const data = await response.json();
+        // setJobs(data);
+      } catch (err) {
+        console.error('Error fetching jobs:', err);
+        setError(err instanceof Error ? err.message : 'Failed to fetch jobs. Please try again later.');
+        setJobs([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Filter Jobs Function
-  const filterJobs = (
-    search: string,
-    budgetMin: string,
-    budgetMax: string
-  ) => {
-    let filteredJobs = jobData;
+    fetchJobs();
+  }, []);
 
-    if (search) {
-      filteredJobs = filteredJobs.filter((job) =>
-        job.title.toLowerCase().includes(search.toLowerCase())
-      );
-    }
+  const filteredJobs = jobs.filter(job => {
+    const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      job.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory ? job.job_category_name === selectedCategory : true;
+    return matchesSearch && matchesCategory;
+  });
 
-    if (budgetMin || budgetMax) {
-      const min = budgetMin ? parseInt(budgetMin) : 0;
-      const max = budgetMax ? parseInt(budgetMax) : Infinity;
-
-      filteredJobs = filteredJobs.filter((job) => {
-        const budgetValue = parseInt(job.budget.replace("BTN ", ""));
-        return budgetValue >= min && budgetValue <= max;
-      });
-    }
-
-    setJobs(filteredJobs);
-  };
-
-  // Clear Filters
-  const clearFilters = () => {
-    setSearchTerm("");
-    setFilters({ budgetMin: "", budgetMax: "" });
-    setJobs(jobData); // Reset jobs to the original data
-    setError(""); // Clear any error
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen">
-      <div className="min-h-screen">
-        {/* Navbar */}
-        <Navbar />
-        {/* Header */}
-        <header className="bg-white shadow-sm py-6 px-6 mb-4 mt-16 ">
-          <h1 className="text-3xl font-bold text-orange-500 mb-2">Find jobs!</h1>
-          <p className="text-sm text-gray-600">
-            Find jobs that match your skills and budget and bid for them.
-          </p>
-        </header>
+    <div className="max-w-7xl mx-auto px-4 py-8">
+      <Navbar />
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold mb-6">Find Jobs</h1>
 
-        {/* Content */}
-        <div className="flex flex-col md:flex-row gap-6 mx-6">
-          {/* Filter Sidebar */}
-          <aside className="w-full md:w-1/3 bg-white shadow-sm rounded-lg p-5 space-y-6">
-            <div>
-              <label className="block font-medium mb-2">Search keyword</label>
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-1">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search for jobs..."
+                placeholder="Search jobs..."
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={searchTerm}
-                onChange={handleSearch}
-                className="w-full border rounded px-4 py-2 focus:outline-orange-500"
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
+          </div>
 
-            <div>
-              <label className="block font-medium mb-2">Budget</label>
-              <div className="flex gap-2">
-                <input
-                  type="number"
-                  name="budgetMin"
-                  placeholder="Min"
-                  value={filters.budgetMin}
-                  onChange={handleBudgetChange}
-                  className="w-1/2 border rounded px-3 py-2 focus:outline-orange-500"
-                />
-                <input
-                  type="number"
-                  name="budgetMax"
-                  placeholder="Max"
-                  value={filters.budgetMax}
-                  onChange={handleBudgetChange}
-                  className="w-1/2 border rounded px-3 py-2 focus:outline-orange-500"
-                />
-              </div>
-            </div>
-            {error && <p className="text-red-500 text-sm">{error}</p>} {/* Error message */}
-          </aside>
-
-          {/* Job Listings */}
-          <section
-            className="sticky w-full md:w-2/3 space-y-6"
-            style={{
-              backgroundImage: "url('/Artboard.png')",
-              backgroundSize: "cover",
-              backgroundAttachment: "fixed",
-              backgroundPosition: "center",
-            }}
+          <select
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
           >
-            <p className="text-gray-600">{jobs.length} jobs found</p>
-            {jobs.length > 0 ? (
-              jobs.map((job) => (
-                <div
-                  key={job.id}
-                  className="bg-transparent-30% shadow-sm rounded-lg p-5 flex justify-between items-start mb-4"
-                >
-                  <div>
-                    <h2 className="text-lg font-semibold text-gray-800">
-                      {job.title}
-                    </h2>
-                    <p className="text-sm text-gray-600 mt-2">
-                      {job.description}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-orange-500 font-semibold text-lg">
-                      {job.budget}
-                    </p>
-                    <p className="text-gray-500 text-sm">{job.avgBid}</p>
-                    <button className="mt-3 bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-700 transition-all duration-300">
-                      Bid now
-                    </button>
+            <option value="">All Categories</option>
+            <option value="IT & Networking">IT & Networking</option>
+          </select>
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        </div>
+      ) : error ? (
+        <Alert className="mb-4 bg-red-50 border-red-200">
+          <AlertCircle className="h-4 w-4 text-red-600" />
+          <AlertDescription className="text-red-600">
+            {error}
+          </AlertDescription>
+        </Alert>
+      ) : jobs.length === 0 ? (
+        <div className="text-center py-12 bg-gray-50 rounded-lg">
+          <Briefcase className="mx-auto h-12 w-12 text-gray-400" />
+          <h3 className="mt-4 text-lg font-medium text-gray-900">No jobs found</h3>
+          <p className="mt-2 text-gray-500">Try adjusting your search criteria</p>
+        </div>
+      ) : (
+        <div className="grid gap-6">
+          {filteredJobs.map((job) => (
+            <div key={job.job_id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-2">{job.title}</h2>
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                      {job.experience_level}
+                    </span>
+                    <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                      {job.payment_type}
+                    </span>
+                    <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
+                      {job.location}
+                    </span>
                   </div>
                 </div>
-              ))
-            ) : (
-              <div className="flex flex-col justify-center items-center space-y-4 py-8">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-16 w-16 text-gray-500"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 3a7 7 0 11-7 7 7 7 0 017-7zm0-1a8 8 0 100 16A8 8 0 0010 2zm3 10a3 3 0 11-6 0 3 3 0 016 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <p className="text-gray-500 text-lg">
-                  No jobs match your criteria.
-                </p>
-                <button
-                  onClick={clearFilters}
-                  className="mt-4 bg-orange-500 text-white px-6 py-2 rounded hover:bg-orange-700 transition-all duration-300"
-                >
-                  Clear Filters
-                </button>
+                <div className="text-right">
+                  <p className="text-lg font-semibold text-green-600">Nu.{job.budget}</p>
+                  <p className="text-sm text-gray-500">{formatDate(job.created_at)}</p>
+                </div>
               </div>
-            )}
-          </section>
-        </div>
 
-        {/* Footer */}
-        <Footer />
-      </div>
+              <p className="text-gray-600 mb-4">{job.description}</p>
+
+              <div className="flex flex-wrap gap-2 mb-4">
+                {job.skills.map((skill) => (
+                  <span key={skill.skill_id} className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-sm">
+                    {skill.name}
+                  </span>
+                ))}
+              </div>
+
+              <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-2">
+                    <Briefcase className="h-4 w-4 text-gray-400" />
+                    <span className="text-sm text-gray-600">{job.job_category_name}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Users className="h-4 w-4 text-gray-400" />
+                    <span className="text-sm text-gray-600">{job.proposals_count} proposals</span>
+                  </div>
+                </div>
+
+                <Button asChild className="w-full/4 flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+                  <Link href={`/submit-proposal/${job.job_id}`}>
+                    {loading ? (
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+                    ) : (
+                      <>
+                        <Send className="h-5 w-5 mr-2" />
+                        Apply
+                      </>
+                    )}
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
 
-export default FindJobsPage;
-// "use client";
-
-// import React, { useState, useEffect } from "react";
-// import Footer from "@/app/components/Shared/Footer";
-// import Navbar from "@/app/components/Shared/NavBar";
-// import axios from "axios";
-
-// const FindJobsPage = () => {
-//   const [jobs, setJobs] = useState([]);
-//   const [searchTerm, setSearchTerm] = useState("");
-//   const [filters, setFilters] = useState({ budgetMin: "", budgetMax: "" });
-//   const [error, setError] = useState(""); // To store error messages
-
-//   // Fetch Jobs from Backend
-//   useEffect(() => {
-//     const fetchJobs = async () => {
-//       try {
-//         const response = await axios.get('/api/jobs'); // Replace with your actual API endpoint
-//         setJobs(response.data);
-//       } catch (error) {
-//         console.error("Error fetching jobs:", error);
-//         setError("Failed to load jobs. Please try again later.");
-//       }
-//     };
-
-//     fetchJobs();
-//   }, []);
-
-//   // Handle Search
-//   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     const value = e.target.value;
-//     setSearchTerm(value);
-//     filterJobs(value, filters.budgetMin, filters.budgetMax);
-//   };
-
-//   // Handle Budget Filtering
-//   const handleBudgetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     const { name, value } = e.target;
-//     let updatedValue = value;
-
-//     if (parseInt(value) < 0) {
-//       updatedValue = "0"; // Prevent negative budget
-//       setError(`${name} cannot be negative.`);
-//     } else {
-//       setError(""); // Clear error if value is valid
-//     }
-
-//     const updatedFilters = { ...filters, [name]: updatedValue };
-//     setFilters(updatedFilters);
-//     filterJobs(searchTerm, updatedFilters.budgetMin, updatedFilters.budgetMax);
-//   };
-
-//   // Filter Jobs Function
-//   const filterJobs = (
-//     search: string,
-//     budgetMin: string,
-//     budgetMax: string
-//   ) => {
-//     let filteredJobs = jobs;
-
-//     if (search) {
-//       filteredJobs = filteredJobs.filter((job) =>
-//         job.title.toLowerCase().includes(search.toLowerCase())
-//       );
-//     }
-
-//     if (budgetMin || budgetMax) {
-//       const min = budgetMin ? parseInt(budgetMin) : 0;
-//       const max = budgetMax ? parseInt(budgetMax) : Infinity;
-
-//       filteredJobs = filteredJobs.filter((job) => {
-//         const budgetValue = parseInt(job.budget.replace("BTN ", ""));
-//         return budgetValue >= min && budgetValue <= max;
-//       });
-//     }
-
-//     setJobs(filteredJobs);
-//   };
-
-//   // Clear Filters
-//   const clearFilters = () => {
-//     setSearchTerm("");
-//     setFilters({ budgetMin: "", budgetMax: "" });
-//     // Fetch all jobs again to reset the list
-//     axios.get('/api/jobs').then(response => setJobs(response.data));
-//     setError(""); // Clear any error
-//   };
-
-//   return (
-//     <div className="bg-gray-50 min-h-screen">
-//       <div className="min-h-screen">
-//         {/* Navbar */}
-//         <Navbar />
-//         {/* Header */}
-//         <header className="bg-white shadow-sm py-6 px-6 mb-4 mt-16">
-//           <h1 className="text-3xl font-bold text-orange-500 mb-2">Find jobs!</h1>
-//           <p className="text-sm text-gray-600">
-//             Find jobs that match your skills and budget and bid for them.
-//           </p>
-//         </header>
-
-//         {/* Content */}
-//         <div className="flex flex-col md:flex-row gap-6 mx-6">
-//           {/* Filter Sidebar */}
-//           <aside className="w-full md:w-1/3 bg-white shadow-sm rounded-lg p-5 space-y-6">
-//             <div>
-//               <label className="block font-medium mb-2">Search keyword</label>
-//               <input
-//                 type="text"
-//                 placeholder="Search for jobs..."
-//                 value={searchTerm}
-//                 onChange={handleSearch}
-//                 className="w-full border rounded px-4 py-2 focus:outline-orange-500"
-//               />
-//             </div>
-
-//             <div>
-//               <label className="block font-medium mb-2">Budget</label>
-//               <div className="flex gap-2">
-//                 <input
-//                   type="number"
-//                   name="budgetMin"
-//                   placeholder="Min"
-//                   value={filters.budgetMin}
-//                   onChange={handleBudgetChange}
-//                   className="w-1/2 border rounded px-3 py-2 focus:outline-orange-500"
-//                 />
-//                 <input
-//                   type="number"
-//                   name="budgetMax"
-//                   placeholder="Max"
-//                   value={filters.budgetMax}
-//                   onChange={handleBudgetChange}
-//                   className="w-1/2 border rounded px-3 py-2 focus:outline-orange-500"
-//                 />
-//               </div>
-//             </div>
-//             {error && <p className="text-red-500 text-sm">{error}</p>}
-//           </aside>
-
-//           {/* Job Listings */}
-//           <section
-//             className="sticky w-full md:w-2/3 space-y-6"
-//             style={{
-//               backgroundImage: "url('/Artboard.png')",
-//               backgroundSize: "cover",
-//               backgroundAttachment: "fixed",
-//               backgroundPosition: "center",
-//             }}
-//           >
-//             <p className="text-gray-600">{jobs.length} jobs found</p>
-//             {jobs.length > 0 ? (
-//               jobs.map((job: any) => (
-//                 <div
-//                   key={job.id}
-//                   className="bg-transparent-30% shadow-sm rounded-lg p-5 flex justify-between items-start mb-4"
-//                 >
-//                   <div>
-//                     <h2 className="text-lg font-semibold text-gray-800">
-//                       {job.title}
-//                     </h2>
-//                     <p className="text-sm text-gray-600 mt-2">
-//                       {job.description}
-//                     </p>
-//                   </div>
-//                   <div className="text-right">
-//                     <p className="text-orange-500 font-semibold text-lg">
-//                       {job.budget}
-//                     </p>
-//                     <p className="text-gray-500 text-sm">{job.avgBid}</p>
-//                     <button className="mt-3 bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-700 transition-all duration-300">
-//                       Bid now
-//                     </button>
-//                   </div>
-//                 </div>
-//               ))
-//             ) : (
-//               <div className="flex flex-col justify-center items-center space-y-4 py-8">
-//                 <svg
-//                   xmlns="http://www.w3.org/2000/svg"
-//                   className="h-16 w-16 text-gray-500"
-//                   viewBox="0 0 20 20"
-//                   fill="currentColor"
-//                 >
-//                   <path
-//                     fillRule="evenodd"
-//                     d="M10 3a7 7 0 11-7 7 7 7 0 017-7zm0-1a8 8 0 100 16A8 8 0 0010 2zm3 10a3 3 0 11-6 0 3 3 0 016 0z"
-//                     clipRule="evenodd"
-//                   />
-//                 </svg>
-//                 <p className="text-gray-500 text-lg">
-//                   No jobs match your criteria.
-//                 </p>
-//                 <button
-//                   onClick={clearFilters}
-//                   className="mt-4 bg-orange-500 text-white px-6 py-2 rounded hover:bg-orange-700 transition-all duration-300"
-//                 >
-//                   Clear Filters
-//                 </button>
-//               </div>
-//             )}
-//           </section>
-//         </div>
-
-//         {/* Footer */}
-//         <Footer />
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default FindJobsPage;
-// "use client";
-
-// import React, { useState } from "react";
-// import Footer from "@/components/Shared/Footer";
-// import Navbar from "@/components/Shared/NavBar";
-
-// interface Job {
-//   id: number;
-//   title: string;
-//   description: string;
-//   budgetMin: string;
-//   budgetMax: string;
-//   avgBid: string;
-//   category: string;
-//   postedBy: {
-//     username: string;
-//     profileLink: string;
-//   };
-// }
-
-// const FindJobsPage = () => {
-//   const dummyJobs: Job[] = [
-//     {
-//       id: 1,
-//       title: "Website Development",
-//       description: "Looking for a skilled developer to build a responsive website.",
-//       budgetMin: "BTN 5,000",
-//       budgetMax: "BTN 10,000",
-//       avgBid: "Average bid: BTN 8,500",
-//       category: "Development",
-//       postedBy: {
-//         username: "DevGuru",
-//         profileLink: "/profile/DevGuru",
-//       },
-//     },
-//     {
-//       id: 2,
-//       title: "Graphic Design for Marketing",
-//       description: "Need an experienced graphic designer for ad campaigns.",
-//       budgetMin: "BTN 5,000",
-//       budgetMax: "BTN 10,000",
-//       avgBid: "Average bid: BTN 4,000",
-//       category: "Design",
-//       postedBy: {
-//         username: "CreativeBee",
-//         profileLink: "/profile/CreativeBee",
-//       },
-//     },
-//   ];
-
-//   const dummyCategories = [
-//     { id: 1, name: "Development" },
-//     { id: 2, name: "Design" },
-//     { id: 3, name: "Writing" },
-//   ];
-
-//   const [jobs, setJobs] = useState<Job[]>(dummyJobs);
-//   const [filteredJobs, setFilteredJobs] = useState<Job[]>(dummyJobs);
-//   const [searchTerm, setSearchTerm] = useState("");
-//   const [filters, setFilters] = useState({
-//     budgetMin: "",
-//     budgetMax: "",
-//     category: "",
-//   });
-
-//   // Handle Search
-//   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     const value = e.target.value;
-//     setSearchTerm(value);
-//     applyFilters(value, filters.budgetMin, filters.budgetMax, filters.category);
-//   };
-
-//   // Handle Budget Filter
-//   const handleBudgetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     const { name, value } = e.target;
-//     setFilters({ ...filters, [name]: value });
-//     applyFilters(searchTerm, name === "budgetMin" ? value : filters.budgetMin, name === "budgetMax" ? value : filters.budgetMax, filters.category);
-//   };
-
-//   // Handle Category Filter
-//   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-//     const value = e.target.value;
-//     setFilters({ ...filters, category: value });
-//     applyFilters(searchTerm, filters.budgetMin, filters.budgetMax, value);
-//   };
-
-//   // Apply Filters
-//   const applyFilters = (search: string, budgetMin: string, budgetMax: string, category: string) => {
-//     let filtered = jobs;
-
-//     if (search) {
-//       filtered = filtered.filter((job) =>
-//         job.title.toLowerCase().includes(search.toLowerCase())
-//       );
-//     }
-
-//     if (budgetMin || budgetMax) {
-//       const min = budgetMin ? parseInt(budgetMin) : 0;
-//       const max = budgetMax ? parseInt(budgetMax) : Infinity;
-
-//       filtered = filtered.filter((job) => {
-//         const budgetValue = parseInt(job.budgetMax.replace("BTN ", ""));
-//         return budgetValue >= min && budgetValue <= max;
-//       });
-//     }
-
-//     if (category) {
-//       filtered = filtered.filter((job) => job.category === category);
-//     }
-
-//     setFilteredJobs(filtered);
-//   };
-
-//   // Clear Filters
-//   const clearFilters = () => {
-//     setSearchTerm("");
-//     setFilters({ budgetMin: "", budgetMax: "", category: "" });
-//     setFilteredJobs(jobs);
-//   };
-
-//   // Handle Profile Click
-//   const handleProfileClick = (profileLink: string) => {
-//     window.location.href = profileLink;
-//   };
-
-//   return (
-//     <div className="bg-gray-50 min-h-screen">
-//       <div className="flex flex-col min-h-screen">
-//         {/* Navbar */}
-//         <Navbar />
-
-//         {/* Header */}
-//         <header className="bg-white shadow-sm py-6 px-6 mb-4 mt-16">
-//           <h1 className="text-3xl font-bold text-orange-500 mb-2">Find jobs!</h1>
-//           <p className="text-sm text-gray-600">
-//             Find jobs that match your skills and budget and bid for them.
-//           </p>
-//         </header>
-
-//         {/* Filters */}
-//         <div className="bg-white shadow-md rounded-lg p-5 mb-4 mx-6">
-//           <div className="flex flex-wrap gap-4 items-center">
-//             {/* Search */}
-//             <input
-//               type="text"
-//               value={searchTerm}
-//               onChange={handleSearch}
-//               placeholder="Search by title"
-//               className="border rounded px-4 py-2 w-full md:w-auto"
-//             />
-
-//             {/* Budget Filters */}
-//             <input
-//               type="number"
-//               name="budgetMin"
-//               value={filters.budgetMin}
-//               onChange={handleBudgetChange}
-//               placeholder="Min Budget"
-//               className="border rounded px-4 py-2 w-full md:w-auto"
-//             />
-//             <input
-//               type="number"
-//               name="budgetMax"
-//               value={filters.budgetMax}
-//               onChange={handleBudgetChange}
-//               placeholder="Max Budget"
-//               className="border rounded px-4 py-2 w-full md:w-auto"
-//             />
-
-//             {/* Category Filter */}
-//             <select
-//               value={filters.category}
-//               onChange={handleCategoryChange}
-//               className="border rounded px-4 py-2 w-full md:w-auto text-gray-500"
-//             >
-//               <option value="" >All Categories</option>
-//               {dummyCategories.map((category) => (
-//                 <option key={category.id} value={category.name}>
-//                   {category.name}
-                  
-//                 </option>
-//               ))}
-//             </select>
-
-//             {/* Clear Filters */}
-//             <button
-//               onClick={clearFilters}
-//               className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
-//             >
-//               Clear Filters
-//             </button>
-//           </div>
-//         </div>
-
-//         {/* Job Listings */}
-//         <div className="flex flex-grow">
-//           <section className="w-full px-6 overflow-auto h-screen space-y-6">
-//             <p className="text-gray-600">{filteredJobs.length} jobs found</p>
-//             {filteredJobs.length > 0 ? (
-//               filteredJobs.map((job: Job) => (
-//                 <div
-//                   key={job.id}
-//                   className="bg-white shadow-md rounded-lg p-5 flex justify-between items-start cursor-pointer hover:shadow-lg transition-all"
-//                 >
-//                   <div>
-//                     <h2 className="text-lg font-semibold text-gray-800">{job.title}</h2>
-//                     <p className="text-sm text-gray-600 mt-2">{job.description}</p>
-//                     <p
-//                       className="text-blue-500 text-sm mt-2 underline cursor-pointer"
-//                       onClick={() => handleProfileClick(job.postedBy.profileLink)}
-//                     >
-//                       Posted by: {job.postedBy.username}
-//                     </p>
-//                   </div>
-//                   <div className="text-right">
-//                     <p className="text-orange-500 font-semibold text-lg">{job.budgetMax}</p>
-//                     <p className="text-gray-500 text-sm">{job.avgBid}</p>
-//                   </div>
-//                 </div>
-//               ))
-//             ) : (
-//               <div className="flex flex-col justify-center items-center space-y-4 py-8">
-//                 <p className="text-gray-500 text-lg">No jobs match your criteria.</p>
-//               </div>
-//             )}
-//           </section>
-//         </div>
-
-//         {/* Footer */}
-//         <Footer />
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default FindJobsPage;
+export default FindJobs;

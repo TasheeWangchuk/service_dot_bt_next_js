@@ -1,7 +1,7 @@
 // components/SkillsManager.tsx
 import React, { useState, useEffect } from 'react';
 import ItemList from '../Shared/ItemList';
-import ItemService from '@/app/api/ServiceProvider/itemservice';
+// import ItemService from '@/app/api/ServiceProvider/itemservice';
 import { toast } from 'react-toastify';
 
 interface Skill {
@@ -12,7 +12,7 @@ interface Skill {
 const SkillsManager: React.FC = () => {
   const [skills, setSkills] = useState<Skill[]>([]);
   const [loading, setLoading] = useState(true);
-  const skillApi = new ItemService('skills');
+  // const skillApi = new ItemService('skills');
 
   useEffect(() => {
     fetchSkills();
@@ -21,8 +21,8 @@ const SkillsManager: React.FC = () => {
   const fetchSkills = async () => {
     try {
       setLoading(true);
-      const data = await skillApi.getAll();
-      setSkills(data);
+      // const data = await skillApi.getAll();
+      // setSkills(data);
     } catch (error) {
       toast.error('Failed to fetch skills');
     } finally {

@@ -26,7 +26,7 @@ const SignIn: React.FC = () => {
     }
 
     try {
-      await login(email, password); // Use login from AuthContext
+      await login(email, password);
     } catch (error: any) {
       if (error.message.includes("invalid email")) {
       toast.error("Invalid email address.");

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ServicesManager from "@/components/profile/SeviceManager";
+// import ServicesManager from "@/components/profile/SeviceManager";
 import SkillsManager from "@/components/profile/SkillManager";
 import ExperienceManager from "@/components/profile/ExperienceManager";
 import CertificateManager from "@/components/profile/CertificateManager";
@@ -180,12 +180,12 @@ const ProfilePage = () => {
         </section>
         
 
-        <section id="Services & Skills" className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Services</h2>
-          <ServicesManager />
-          <div className="mt-4 mb-4">
+        <section id="Skills" className="bg-white rounded-xl shadow-sm p-6">
+          {/* <h2 className="text-xl font-semibold text-gray-800 mb-4">Services</h2>
+          <ServicesManager /> */}
+          {/* <div className="mt-4 mb-4"> */}
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Skills</h2>
-          <SkillsManager/></div>
+          {/* <SkillsManager/></div> */}
         </section>
 
         <section id="Experience" className="bg-white rounded-xl shadow-sm p-6">
