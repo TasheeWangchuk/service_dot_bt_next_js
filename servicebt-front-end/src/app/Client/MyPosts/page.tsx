@@ -59,7 +59,7 @@ const Post = () => {
         payment_type: "",
         time_preferences_type: "",
         experience_level: "",
-        location: "REMOTE",
+        location: "",
         skills: [],
     });
 

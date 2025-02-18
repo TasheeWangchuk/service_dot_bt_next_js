@@ -26,12 +26,8 @@ const PasswordReset = () => {
     setIsLoading(true);
 
     try {
-      const response = await apiClient.post('/api/v1/users/reset-password/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: email.trim().toLowerCase() }),
+      const response = await apiClient.post('/api/v1/users/reset-password-request/', {
+        email: email.trim().toLowerCase(),
       });
 
       if (response.status !== 200) {

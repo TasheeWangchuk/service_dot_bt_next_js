@@ -153,7 +153,7 @@ const ProfilePage = () => {
       <div className="sticky top-0 z-50 bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="flex space-x-8 overflow-x-auto">
-            {["overview", "Services & Skills", "Experience", "portfolio", "Certificates", "Education"].map((section) => (
+            {["overview", "Skills", "Experience", "portfolio", "Certificates", "Education"].map((section) => (
               <button
                 key={section}
                 onClick={() => scrollToSection(section)}
@@ -185,7 +185,8 @@ const ProfilePage = () => {
           <ServicesManager /> */}
           {/* <div className="mt-4 mb-4"> */}
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Skills</h2>
-          {/* <SkillsManager/></div> */}
+          <SkillsManager/>
+          {/* </div> */}
         </section>
 
         <section id="Experience" className="bg-white rounded-xl shadow-sm p-6">

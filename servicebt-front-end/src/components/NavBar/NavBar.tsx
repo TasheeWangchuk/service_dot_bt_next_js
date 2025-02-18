@@ -100,12 +100,12 @@ const Navbar = () => {
           { href: "/Client/Post", label: "Post Project", icon: <PlusCircle className="w-4 h-4" /> },
           { href: "/Client/MyPosts", label: "My Projects", icon: <FileText className="w-4 h-4" /> },
           { href: "/Client/FindServiceProvider", label: "Find Provider", icon: <Search className="w-4 h-4" /> },
-          { href: "/Client/Contracts", label: "Contracts", icon: <Handshake className="w-4 h-4" /> }
+          { href: "/Contract-list", label: "Contracts", icon: <Handshake className="w-4 h-4" /> }
         ]
         : [
           { href: "/ServiceProvider/FindJobs", label: "Find Work", icon: <Search className="w-4 h-4" /> },
           { href: "/ServiceProvider/MyProposals", label: "Proposals", icon: <FileText className="w-4 h-4" /> },
-          { href: "/ServiceProvider/Contracts", label: "Contracts", icon: <Handshake className="w-4 h-4" /> }
+          { href: "/Contract-list", label: "Contracts", icon: <Handshake className="w-4 h-4" /> }
         ];
 
       return [...baseLinks, ...roleSpecificLinks];

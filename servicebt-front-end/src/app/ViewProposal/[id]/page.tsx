@@ -1,222 +1,257 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { AlertCircle, DollarSign, Book, Briefcase, X } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { AlertCircle, DollarSign, Calendar, User, Clock, Tag } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import Loading from "@/components/Shared/Loading";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Navbar from "@/components/NavBar/NavBar";
+import apiClient from "@/app/lib/apiClient";
+import Loading from "@/components/Shared/Loading";
+
 
 interface Proposal {
-  id: number;
-  bid_amount: number;
-  cover_letter: string;
-  skills: string[];
-}
-
-interface RouteParams {
-  id: string;
+    proposal_id: number;
+    bid_amount: number;
+    status: string;
+    created_at: string;
+    skills_details: { skill_id: number; name: string }[];
+    user: {
+        user_id: number;
+        username: string;
+        profile_picture: string;
+        headline: string | null;
+        address: string | null;
+    };
+    cover_letter: string | null;
 }
 
 const JobProposals = () => {
-  const { id } = useParams();
-  const [proposals, setProposals] = useState<Proposal[]>([]);
-  const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>("");
-  const [processing, setProcessing] = useState<boolean>(false);
-  const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
+    const { id } = useParams();
+    const router = useRouter();
+    const [proposals, setProposals] = useState<Proposal[]>([]);
+    const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string>("");
+    const [processing, setProcessing] = useState<boolean>(false);
 
-  useEffect(() => {
-    const fetchProposals = async () => {
-      try {
-        const response = await fetch(`/api/v1/jobs/${id}/proposals/`);
-        if (!response.ok) throw new Error("Failed to fetch proposals");
-        const data = await response.json();
-        setProposals(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
-      } finally {
-        setLoading(false);
-      }
+    useEffect(() => {
+        const fetchProposals = async () => {
+            try {
+                const response = await apiClient.get(`/api/v1/jobs/${id}/proposals/`);
+                setProposals(response.data);
+                // console.log("response",response.data);
+            } catch (err) {
+                setError("Failed to fetch proposals");
+            } finally {
+                setLoading(false);
+            }
+        };
+        if (id) fetchProposals();
+    }, [id]);
+
+    const handleAccept = async (proposal_id: number) => {
+        if (!selectedProposal) {
+            setError("No proposal selected.");
+            return;
+        }
+
+        const proposalId = selectedProposal.proposal_id; // Ensure correct ID is used
+        console.log("Accepting proposal with ID:", proposalId); // Debugging log
+
+        setProcessing(true);
+        try {
+            const response = await apiClient.put(
+                `/api/v1/proposals/${proposalId}/accept/`,
+                { status: "ACCEPTED" } // Send correct payload
+            );
+            console.log("Response:", response.data);
+            router.push(`/Contract/${proposalId}`);
+
+            // // Remove the accepted proposal from the list
+            // setProposals((prev) => prev.filter((p) => p.proposal_id !== proposalId));
+            // setSelectedProposal(null);
+        } catch (error) {
+            // console.error("Error:", error.response?.data || error.message);
+            setError("Failed to accept proposal.");
+        } finally {
+            setProcessing(false);
+        }
     };
 
-    if (id) fetchProposals();
-  }, [id]);
 
-  const handleAccept = async (proposalId: number) => {
-    setProcessing(true);
-    try {
-      const response = await fetch(`/api/v1/proposals/${proposalId}/accept/`, {
-        method: "POST",
-      });
-      if (!response.ok) throw new Error("Failed to accept proposal");
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    };
 
-      setProposals(proposals.filter((p) => p.id !== proposalId));
-      setSelectedProposal(null);
-      setShowConfirmation(true);
-      setTimeout(() => setShowConfirmation(false), 3000);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
-    } finally {
-      setProcessing(false);
+    const getStatusColor = (status: string) => {
+        switch (status.toUpperCase()) {
+            case 'PENDING': return 'bg-yellow-100 text-yellow-800';
+            case 'ACCEPTED': return 'bg-green-100 text-green-800';
+            case 'REJECTED': return 'bg-red-100 text-red-800';
+            default: return 'bg-gray-100 text-gray-800';
+        }
+    };
+
+    if (loading) {
+        return (
+            <Loading />
+        );
     }
-  };
 
-  const handleReject = async (proposalId: number) => {
-    setSelectedProposal(null);
-    // Add rejection API call here if needed
-  };
+    return (
+        <div className="max-w-7xl mx-auto px-4 py-8">
+            <Navbar />
+            {error && (
+                <Alert className="mb-4 bg-red-50 border-red-200">
+                    <AlertCircle className="h-4 w-4 text-red-600" />
+                    <AlertDescription className="text-red-600">{error}</AlertDescription>
+                </Alert>
+            )}
 
-  if (loading) return <Loading />;
-
-  return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <Navbar />
-      {showConfirmation && (
-        <Alert className="mb-4 bg-green-50 border-green-200">
-          <AlertCircle className="h-4 w-4 text-green-600" />
-          <AlertDescription className="text-green-600">
-            Proposal accepted successfully!
-          </AlertDescription>
-        </Alert>
-      )}
-
-      {error && (
-        <Alert className="mb-4 bg-red-50 border-red-200">
-          <AlertCircle className="h-4 w-4 text-red-600" />
-          <AlertDescription className="text-red-600">{error}</AlertDescription>
-        </Alert>
-      )}
-
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">
-          Proposals for Job #{id}
-        </h1>
-        <span className="text-sm text-gray-500">
-          {proposals.length} proposal{proposals.length !== 1 ? "s" : ""}
-        </span>
-      </div>
-
-      {!proposals.length ? (
-        <div className="text-center py-12 bg-gray-50 rounded-lg">
-          <Briefcase className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-4 text-lg font-medium text-gray-900">No proposals</h3>
-          <p className="mt-2 text-gray-500">No proposals have been submitted yet.</p>
-        </div>
-      ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {proposals.map((proposal) => (
-            <div
-              key={proposal.id}
-              className="bg-white rounded-lg shadow-sm border border-gray-200 transition-transform hover:scale-[1.02] hover:shadow-md"
-            >
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center space-x-2">
-                    <DollarSign className="h-5 w-5 text-green-600" />
-                    <span className="text-xl font-semibold text-gray-900">
-                      ${proposal.bid_amount}
-                    </span>
-                  </div>
-                  <span className="text-sm text-gray-500">
-                    ID: {proposal.id}
-                  </span>
-                </div>
-                <button
-                  onClick={() => setSelectedProposal(proposal)}
-                  className="w-full mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                >
-                  View Details
-                </button>
-              </div>
+            <div className="flex justify-between items-center mb-8">
+                <h1 className="text-3xl font-bold text-gray-900">Proposals for Job #{id}</h1>
+                <span className="text-gray-500">{proposals.length} Proposals</span>
             </div>
-          ))}
-        </div>
-      )}
 
-      {selectedProposal && (
-        <div className="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-          <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-            <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div className="relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-              <div className="absolute top-0 right-0 pt-4 pr-4">
-                <button
-                  onClick={() => setSelectedProposal(null)}
-                  className="text-gray-400 hover:text-gray-500 focus:outline-none"
-                >
-                  <X className="h-6 w-6" />
-                </button>
-              </div>
-              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <div className="sm:flex sm:items-start">
-                  <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
-                    <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                      Proposal Details
-                    </h3>
-                    <div className="mt-4 space-y-4">
-                      <div>
-                        <div className="flex items-center space-x-2 text-gray-500 mb-2">
-                          <Book className="h-5 w-5" />
-                          <span className="font-medium">Cover Letter</span>
-                        </div>
-                        <p className="text-gray-700 bg-gray-50 p-4 rounded-md">
-                          {selectedProposal.cover_letter}
-                        </p>
-                      </div>
-                      <div>
-                        <div className="flex items-center space-x-2 text-gray-500 mb-2">
-                          <DollarSign className="h-5 w-5" />
-                          <span className="font-medium">Bid Amount</span>
-                        </div>
-                        <p className="text-2xl font-bold text-green-600">
-                          ${selectedProposal.bid_amount}
-                        </p>
-                      </div>
-                      <div>
-                        <div className="flex items-center space-x-2 text-gray-500 mb-2">
-                          <Briefcase className="h-5 w-5" />
-                          <span className="font-medium">Skills</span>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {selectedProposal.skills.map((skill) => (
-                            <span
-                              key={skill}
-                              className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
-                            >
-                              {skill}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleAccept(selectedProposal.id)}
-                  disabled={processing}
-                  className="w-full sm:w-auto inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {processing ? "Processing..." : "Accept Proposal"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleReject(selectedProposal.id)}
-                  className="mt-3 sm:mt-0 w-full sm:w-auto inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm"
-                >
-                  Reject
-                </button>
-              </div>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {proposals.map((proposal) => (
+                    <Card
+                        key={proposal.proposal_id}
+                        className="cursor-pointer transition-all hover:scale-[1.02] hover:shadow-md h-full"
+                        onClick={() => {
+                            // console.log("Selected Proposal:", proposal); 
+                            setSelectedProposal(proposal);
+                        }}
+                    >
+                        <CardHeader className="pb-4">
+                            <div className="flex items-start justify-between">
+                                <div className="flex items-center gap-3">
+                                    <Avatar className="h-12 w-12">
+                                        <AvatarImage src={proposal.user.profile_picture || ''} />
+                                        <AvatarFallback>{proposal.user.username.charAt(0)}</AvatarFallback>
+                                    </Avatar>
+                                    <div>
+                                        <CardTitle className="text-lg">{proposal.user.username}</CardTitle>
+                                        {proposal.user.headline && (
+                                            <p className="text-sm text-gray-500">{proposal.user.headline}</p>
+                                        )}
+                                    </div>
+                                </div>
+                                <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(proposal.status)}`}>
+                                    {proposal.status}
+                                </span>
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-3">
+                                <div className="flex items-center gap-2">
+                                    <DollarSign className="h-5 w-5 text-green-600" />
+                                    <span className="text-xl font-semibold text-gray-900">
+                                        Nu. {proposal.bid_amount.toLocaleString()}
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-2 text-sm text-gray-500">
+                                    <Clock className="h-4 w-4" />
+                                    <span>{formatDate(proposal.created_at)}</span>
+                                </div>
+                                {proposal.user.address && (
+                                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                                        <User className="h-4 w-4" />
+                                        <span>{proposal.user.address}</span>
+                                    </div>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
             </div>
-          </div>
+
+            <Dialog open={!!selectedProposal} onOpenChange={() => setSelectedProposal(null)}>
+                <DialogContent className="sm:max-w-lg">
+                    {selectedProposal && (
+                        <>
+                            <DialogHeader>
+                                <DialogTitle>Proposal Details</DialogTitle>
+                            </DialogHeader>
+                            <div className="space-y-6 py-4">
+                                <div className="flex items-start gap-4">
+                                    <Avatar className="h-16 w-16">
+                                        <AvatarImage src={selectedProposal.user.profile_picture || ''} />
+                                        <AvatarFallback>{selectedProposal.user.username.charAt(0)}</AvatarFallback>
+                                    </Avatar>
+                                    <div>
+                                        <h3 className="text-xl font-semibold">{selectedProposal.user.username}</h3>
+                                        {selectedProposal.user.headline && (
+                                            <p className="text-gray-500">{selectedProposal.user.headline}</p>
+                                        )}
+                                        {selectedProposal.user.address && (
+                                            <p className="text-sm text-gray-500">{selectedProposal.user.address}</p>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="bg-gray-50 p-4 rounded-lg">
+                                        <div className="flex items-center gap-2 text-gray-500 mb-1">
+                                            <DollarSign className="h-5 w-5" />
+                                            <span className="text-sm">Bid Amount</span>
+                                        </div>
+                                        <p className="text-xl font-semibold text-gray-900">
+                                            Nu. {selectedProposal.bid_amount.toLocaleString()}
+                                        </p>
+                                    </div>
+
+                                    <div className="bg-gray-50 p-4 rounded-lg">
+                                        <div className="flex items-center gap-2 text-gray-500 mb-1">
+                                            <Calendar className="h-5 w-5" />
+                                            <span className="text-sm">Submitted On</span>
+                                        </div>
+                                        <p className="text-gray-900">{formatDate(selectedProposal.created_at)}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span>{selectedProposal.cover_letter}</span>
+                                </div>
+
+                                <div>
+                                    <div className="flex items-center gap-2 text-gray-500 mb-2">
+                                        <Tag className="h-5 w-5" />
+                                        <span>Skills</span>
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                        {selectedProposal.skills_details.map((skill) => (
+                                            <span
+                                                key={skill.skill_id}
+                                                className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+                                            >
+                                                {skill.name}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <Button
+                                    onClick={() => handleAccept(selectedProposal.proposal_id)}
+                                    disabled={processing}
+                                    className="w-full bg-green-600 hover:bg-green-700 text-white"
+                                >
+                                    {processing ? "Processing..." : "Accept Proposal"}
+                                </Button>
+                            </div>
+                        </>
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
-      )}
-    </div>
-  );
+    );
 };
 
 export default JobProposals;

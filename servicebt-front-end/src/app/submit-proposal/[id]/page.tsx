@@ -38,7 +38,7 @@ const JobProposal = () => {
       
           setSkills(formattedSkills);
         } catch (error) {
-          console.error("Error fetching skills:", error);
+        //   console.error("Error fetching skills:", error);
           toast.error("Failed to load skills");
         }
       };      
@@ -55,7 +55,7 @@ const JobProposal = () => {
   
     try {
       const skillsToSend = selectedSkills.map(skill => skill.value);
-      console.log("Skills being sent:", skillsToSend); // Debug log
+    //   console.log("Skills being sent:", skillsToSend); 
   
       const response = await apiClient.post(`/api/v1/jobs/${jobId}/proposals/`, {
         ...formData,

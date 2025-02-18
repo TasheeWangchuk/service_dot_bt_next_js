@@ -1,28 +1,45 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import apiClient from "@/app/lib/apiClient";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Trash2, Edit } from "lucide-react";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { Button } from "@/components/ui/button";
+import { 
+  Loader, 
+  XCircle, 
+  CheckCircle, 
+  FileText, 
+  DollarSign,
+  Calendar,
+  Briefcase,
+  Tag,
+  AlertCircle
+} from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import apiClient from "@/app/lib/apiClient";
 import Navbar from "@/components/NavBar/NavBar";
-import Loading from "@/components/Shared/Loading"
-const ProposalsList = () => {
-  const [proposals, setProposals] = useState([
-    {
-      id: 1,
-      job_id: 11,
-      job_title: "Frontend Developer Needed",
-      bid_amount: 500,
-      cover_letter: "I have 3 years of experience in React and Next.js. I'm confident in delivering high-quality UI/UX.",
-    },
-  ]); // Dummy proposal added
-  const [loading, setLoading] = useState(false);
+import { ToastContainer, toast } from "react-toastify";
+import Loading from "@/components/Shared/Loading";
+
+interface Proposal {
+  proposal_id: string;
+  bid_amount: number;
+  created_at: string;
+  user: {
+    username: string;
+  };
+  skills: {
+    name: string;
+  }[];
+  status: string;
+}
+
+const MyProposals = () => {
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [proposals, setProposals] = useState<Proposal[]>([]);
   const [error, setError] = useState("");
-  const [editMode, setEditMode] = useState(null);
-  const [editData, setEditData] = useState({ cover_letter: "", bid_amount: "" });
+  const [filterStatus, setFilterStatus] = useState<string>("ALL");
 
   useEffect(() => {
     fetchProposals();
@@ -31,112 +48,161 @@ const ProposalsList = () => {
   const fetchProposals = async () => {
     try {
       const response = await apiClient.get("/api/v1/proposals/my-proposals/");
-      setProposals(response.data.length ? response.data : proposals); // Keep dummy if empty
+      setProposals(response.data);
     } catch (error) {
+      console.error("Error fetching proposals:", error);
       setError("Failed to load proposals");
+      toast.error("Failed to load proposals");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleEdit = (proposal: { id: any; job_id?: number; job_title?: string; bid_amount: any; cover_letter: any; }) => {
-    setEditMode(proposal.id);
-    setEditData({ cover_letter: proposal.cover_letter, bid_amount: proposal.bid_amount });
-  };
-
-  const handleSave = async (id: number) => {
-    try {
-      await apiClient.put(`/api/v1/proposals/${id}/`, editData);
-      toast.success("Proposal updated successfully");
-      fetchProposals();
-      setEditMode(null);
-    } catch (error) {
-      toast.error("Update failed");
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "PENDING":
+        return "bg-yellow-50 border-yellow-200 text-yellow-700";
+      case "APPROVED":
+        return "bg-green-50 border-green-200 text-green-700";
+      case "REJECTED":
+        return "bg-red-50 border-red-200 text-red-700";
+      default:
+        return "bg-gray-50 border-gray-200 text-gray-700";
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm("Are you sure you want to delete this proposal?")) return;
-    try {
-      await apiClient.delete(`/api/v1/proposals/${id}/`);
-      toast.success("Proposal removed");
-      setProposals(proposals.filter((proposal) => proposal.id !== id));
-    } catch (error) {
-      toast.error("Failed to delete");
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "PENDING":
+        return <Loader className="h-5 w-5 text-yellow-500 animate-spin" />;
+      case "APPROVED":
+        return <CheckCircle className="h-5 w-5 text-green-500" />;
+      case "REJECTED":
+        return <XCircle className="h-5 w-5 text-red-500" />;
+      default:
+        return null;
     }
   };
 
-  const handleRetrieveProposal = async (jobId: number, proposalId: number) => {
-    try {
-      const response = await apiClient.get(`/api/v1/jobs/${jobId}/proposals/${proposalId}/`);
-      toast.success("Proposal details retrieved");
-      console.log(response.data);
-    } catch (error) {
-      toast.error("Failed to retrieve proposal");
-    }
-  };
+  const filteredProposals = filterStatus === "ALL" 
+    ? proposals 
+    : proposals.filter(p => p.status === filterStatus);
 
   if (loading) return <Loading />;
 
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <div className="max-w-4xl mx-auto mt-4">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold text-gray-800">My Proposals</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {proposals.length === 0 ? (
-              <p className="text-center text-gray-500">No proposals found.</p>
-            ) : (
-              <div className="space-y-4">
-                {proposals.map((proposal) => (
-                  <div key={proposal.id} className="border rounded-lg p-4 bg-white shadow-sm">
-                    {editMode === proposal.id ? (
-                      <div className="space-y-3">
-                        <input
-                          type="text"
-                          value={editData.cover_letter}
-                          onChange={(e) => setEditData({ ...editData, cover_letter: e.target.value })}
-                          className="w-full border rounded px-3 py-2"
-                          placeholder="Edit cover letter"
-                        />
-                        <input
-                          type="number"
-                          value={editData.bid_amount}
-                          onChange={(e) => setEditData({ ...editData, bid_amount: e.target.value })}
-                          className="w-full border rounded px-3 py-2"
-                          placeholder="Edit bid amount"
-                        />
-                        <div className="flex gap-2">
-                          <Button onClick={() => handleSave(proposal.id)} className="bg-green-600 hover:bg-green-700 text-white">Save</Button>
-                          <Button onClick={() => setEditMode(null)} className="bg-gray-400 hover:bg-gray-500 text-white">Cancel</Button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <p className="text-lg font-semibold">{proposal.job_title}</p>
-                          <p className="text-sm text-gray-600">Bid: ${proposal.bid_amount}</p>
-                          <p className="text-sm text-gray-500">{proposal.cover_letter}</p>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button onClick={() => handleEdit(proposal)} className="bg-blue-600 hover:bg-blue-700 text-white"><Edit className="h-5 w-5" /></Button>
-                          <Button onClick={() => handleDelete(proposal.id)} className="bg-red-600 hover:bg-red-700 text-white"><Trash2 className="h-5 w-5" /></Button>
-                          <Button onClick={() => handleRetrieveProposal(proposal.job_id, proposal.id)} className="bg-gray-700 hover:bg-gray-800 text-white">View</Button>
-                        </div>
-                      </div>
-                    )}
+      <div className="max-w-6xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">My Proposals</h1>
+            <p className="text-gray-600 mt-1">Track and manage your submitted proposals</p>
+          </div>
+          <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow-sm">
+            <Briefcase className="h-5 w-5 text-blue-600" />
+            <span className="font-medium text-gray-900">{proposals.length} Total Proposals</span>
+          </div>
+        </div>
+
+        {error ? (
+          <Alert className="mb-6 bg-red-50 border-red-200">
+            <AlertCircle className="h-4 w-4 text-red-600" />
+            <AlertDescription className="text-red-600">{error}</AlertDescription>
+          </Alert>
+        ) : null}
+
+        <div className="mb-6 flex flex-wrap gap-2">
+          {["ALL", "PENDING", "APPROVED", "REJECTED"].map((status) => (
+            <Button
+              key={status}
+              variant={filterStatus === status ? "default" : "outline"}
+              size="sm"
+              onClick={() => setFilterStatus(status)}
+              className={`${filterStatus === status ? 'bg-blue-600' : 'bg-white'}`}
+            >
+              {status === "ALL" ? "All Proposals" : status}
+            </Button>
+          ))}
+        </div>
+
+        {filteredProposals.length === 0 ? (
+          <Card className="text-center p-8">
+            <FileText className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+            <h3 className="text-xl font-medium text-gray-900 mb-2">No Proposals Found</h3>
+            <p className="text-gray-500 mb-4">You haven't submitted any proposals yet.</p>
+            <Button 
+              onClick={() => router.push('/jobs')}
+              className="inline-flex items-center"
+            >
+              <Briefcase className="h-4 w-4 mr-2" />
+              Browse Available Jobs
+            </Button>
+          </Card>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {filteredProposals.map((proposal) => (
+              <Card
+                key={proposal.proposal_id}
+                className="transition-all duration-200 hover:shadow-lg border-2 hover:border-blue-200"
+              >
+                <CardContent className="p-6">
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex items-center gap-2">
+                      <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(proposal.status)}`}>
+                        {getStatusIcon(proposal.status)}
+                        <span className="ml-1">{proposal.status}</span>
+                      </span>
+                    </div>
+                    <span className="text-sm text-gray-500">#{proposal.proposal_id}</span>
                   </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg">
+                      <DollarSign className="h-5 w-5 text-green-600" />
+                      <span className="text-xl font-semibold text-gray-900">
+                        Nu. {Number(proposal.bid_amount).toLocaleString()}
+                      </span>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex items-start gap-2">
+                        <Tag className="h-4 w-4 text-gray-400 mt-1" />
+                        <div className="flex-1">
+                          <div className="text-sm text-gray-600 mb-1">Required Skills</div>
+                          <div className="flex flex-wrap gap-2">
+                            {proposal.skills.map((skill, index) => (
+                              <span
+                                key={index}
+                                className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full"
+                              >
+                                {skill.name}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full mt-4 hover:bg-gray-50"
+                      onClick={() => router.push(`/view-myproposal-detail/${proposal.proposal_id}`)}
+                    >
+                      <FileText className="h-4 w-4 mr-2" /> 
+                      View Details
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
+      <ToastContainer position="bottom-right" />
     </div>
   );
 };
 
-export default ProposalsList;
+export default MyProposals;
