@@ -31,7 +31,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ userData }) => (
         <div className="flex items-center gap-4 text-gray-700 text-sm mt-2">
           <div className="flex items-center gap-2">
             <Mail className="w-4 h-4" />
-            <span>{userData?.user.email}</span>
+            <span>{userData?.email}</span>
           </div>
           <div className="flex items-center gap-2">
             <Phone className="w-4 h-4" />

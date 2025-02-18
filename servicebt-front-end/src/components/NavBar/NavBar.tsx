@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/app/context/AuthContext";
 import NotificationBell from "../Notification/notification";
-import { useUserStore } from "@/store/userStore";
+import { useUserStore } from "@/hooks/userStore";
 
 interface NavLinkProps {
   href: string;

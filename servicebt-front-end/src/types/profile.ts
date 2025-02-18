@@ -12,3 +12,20 @@ export interface UserProfile {
       bio: string;
     };
   }
+
+//for uppdating
+export interface ProfileData {
+    headline?: string;
+    bio?: string;
+    address?: string;
+    profilePicture?: string;
+    bannerPicture?: string;
+  }
+  
+  
+  export interface ProfileUpdateData {
+    headline: string;
+    bio: string;
+    address: string;
+  }
+  
