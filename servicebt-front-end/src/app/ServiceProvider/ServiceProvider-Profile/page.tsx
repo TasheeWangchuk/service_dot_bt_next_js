@@ -213,3 +213,83 @@ const ProfilePage = () => {
 };
 
 export default ProfilePage;
+// 'use client';
+
+// import React from "react";
+// import { ToastContainer } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
+// import { useUserStore } from "@/store/userStore";
+// import Navbar from "@/components/NavBar/NavBar";
+// import { ProfileBanner } from "@/components/profile/ProfileBanner";
+// import { ProfileHeader } from "@/components/profile/ProfileHeader";
+// import { NavigationTabs } from "@/components/profile/NavigationTab";
+// import SkillsManager from "@/components/profile/SkillManager";
+// import ExperienceManager from "@/components/profile/ExperienceManager";
+// import CertificateManager from "@/components/profile/CertificateManager";
+// import Portfolio from "@/components/profile/portfolio";
+// import EducationManager from "@/components/profile/EducationManager";
+// import useActiveSection  from "@/hooks/useActiveSection";
+// import {UserProfile} from "@/types/profile"; 
+
+// const ProfilePage = () => {
+//   const { activeSection, scrollToSection } = useActiveSection();
+//   const { profile, first_name, last_name, phone, username, email, fetchUserData } = useUserStore();
+
+//   React.useEffect(() => {
+//     fetchUserData();
+//   }, [fetchUserData]);
+
+//   return (
+//     <div className="min-h-screen bg-white/10 backdrop-blur-sm">
+//       <Navbar />
+//       <ProfileBanner bannerUrl={profile?.banner} />
+//       <ProfileHeader
+//         profile={profile}
+//         first_name={first_name}
+//         last_name={last_name}
+//         username={username}
+//         email={email}
+//         phone={phone}
+//       />
+//       <NavigationTabs activeSection={activeSection} onSectionChange={scrollToSection} />
+
+//       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+//         <section id="overview" className="bg-white rounded-xl shadow-sm p-6">
+//           <h2 className="text-xl font-semibold text-gray-800">About Me</h2>
+//           <p className="text-gray-600 leading-relaxed mt-2">
+//             {profile?.bio || "No bio available."}
+//           </p>
+//         </section>
+
+//         <section id="Skills" className="bg-white rounded-xl shadow-sm p-6">
+//           <h2 className="text-xl font-semibold text-gray-800 mb-4">Skills</h2>
+//           <SkillsManager/>
+//         </section>
+
+//         <section id="Experience" className="bg-white rounded-xl shadow-sm p-6">
+//           <h2 className="text-xl font-semibold text-gray-800 mb-4">Experience</h2>
+//           <ExperienceManager/>
+//         </section>
+
+//         <section id="portfolio" className="bg-white rounded-xl shadow-sm p-6">
+//           <h2 className="text-xl font-semibold text-gray-800 mb-4">Portfolio</h2>
+//           <Portfolio />
+//         </section>
+
+//         <section id="Certificates" className="bg-white rounded-xl shadow-sm p-6">
+//           <h2 className="text-xl font-semibold text-gray-800 mb-4">Certificates</h2>
+//           <CertificateManager/>
+//         </section>
+
+//         <section id="Education" className="bg-white rounded-xl shadow-sm p-6">
+//           <h2 className="text-xl font-semibold text-gray-800">Education</h2>
+//           <EducationManager/>
+//         </section>
+//       </main>
+
+//       <ToastContainer position="top-right" />
+//     </div>
+//   );
+// };
+
+// export default ProfilePage;

@@ -1,6 +1,5 @@
-// app/profile-view/[id]/page.tsx
-import ProfileView from '@/components/ViewProfile';
+import ProfileView from '@/components/Profile-View/ViewProfile';
 
-export default function ProfilePage({ params }: { params: { id: string } }) {
+export default async function ProfilePage({ params }: { params: { id: string } }) {
   return <ProfileView userId={params.id} />;
 }
