@@ -7,7 +7,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Clipboard, Calendar, DollarSign, ExternalLink, Coins, CoinsIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import apiClient from '@/app/lib/apiClient';
+import apiClient from '@/app/api/apiClient';
 import Loading from '@/components/Shared/Loading';
 import Navbar from '@/components/NavBar/NavBar';
 

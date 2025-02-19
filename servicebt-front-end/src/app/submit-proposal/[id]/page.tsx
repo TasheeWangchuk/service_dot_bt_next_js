@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, Send } from "lucide-react";
-import apiClient from "@/app/lib/apiClient";
+import apiClient from "@/app/api/apiClient";
 import Select from "react-select";
 import Navbar from "@/components/NavBar/NavBar";
 import { ToastContainer, toast } from "react-toastify";
@@ -65,7 +65,7 @@ const JobProposal = () => {
   
       if (response.status === 201) {
         toast.success("Proposal submitted successfully!");
-        router.push("/pages/ServiceProvider/MyProposals");
+        router.push("/ServiceProvider/MyProposals");
       }
     } catch (error) {
       console.error("Error submitting proposal:", error);

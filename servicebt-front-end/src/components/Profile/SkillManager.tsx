@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Coffee, PlusCircle as Plus, X } from "lucide-react";
-import apiClient from "@/app/lib/apiClient";
+import apiClient from "@/app/api/apiClient";
 import Loading from "../Shared/Loading";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -30,7 +30,7 @@ const ProfileSkills = () => {
     setError(null);
     try {
       const response = await apiClient.get("/api/v1/users/profile/");
-      setSkills(response.data.profile.skills); 
+      setSkills(response.data.skills); 
     } catch (error) {
       setError("Failed to load skills. Please try again later.");
       toast({
@@ -77,10 +77,9 @@ const ProfileSkills = () => {
       // Update the skills array by sending the updated list to the backend
       await apiClient.put("/api/v1/users/profile/", {
         ...currentProfile,
-        profile: {
           ...currentProfile.profile,
           skills: updatedSkills
-        }
+        
       });
 
       setSkills(updatedSkills);
@@ -113,11 +112,10 @@ const ProfileSkills = () => {
 
       // Update the skills array by sending the updated list to the backend
       await apiClient.put("/api/v1/users/profile/", {
-        ...currentProfile,
-        profile: {
+        ...currentProfile,        
           ...currentProfile.profile,
           skills: updatedSkills
-        }
+
       });
 
       setSkills(updatedSkills);

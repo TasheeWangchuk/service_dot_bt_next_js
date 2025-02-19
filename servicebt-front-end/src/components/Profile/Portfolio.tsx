@@ -185,7 +185,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Plus, Pencil, Trash2, X, Loader2, ImagePlus } from 'lucide-react';
 import { toast } from 'react-toastify';
-import apiClient from '@/app/lib/apiClient';
+import apiClient from '@/app/api/apiClient';
 
 interface PortfolioItem {
   id: number;

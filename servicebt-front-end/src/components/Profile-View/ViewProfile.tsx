@@ -5,8 +5,9 @@ import { Briefcase, Award, BookOpen } from 'lucide-react';
 import { ToastContainer } from 'react-toastify';
 import Loading from '@/components/Shared/Loading';
 import ProfileHeader from './ProfileHeader';
-import ProfileSection from './ProfileSection';
+import ProfileSection from '@/components/Profile-View/ProfileSection';
 import useProfileData from '@/hooks/useProfileData';
+import {ProfileData, Experience, Education} from '@/types/profile';
 
 interface ProfileViewProps {
   userId: string;
@@ -71,9 +72,9 @@ const ProfileView: React.FC<ProfileViewProps> = ({ userId }) => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Banner */}
-      <div className="relative w-full h-72 md:h-96 bg-gradient-to-r from-blue-500 to-purple-600">
+      <div className="relative w-full h-72 md:h-96">
         <img
-          src={userData?.banner || "/banner.jpg"}
+          src={userData?.profile?.banner || "/banner.jpg"}
           alt="Profile Banner"
           className="w-full h-full object-cover"
         />

@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, useEffect } from "react";
-import apiClient from "@/app/lib/apiClient";
+import apiClient from "@/app/api/apiClient";
 import { toast } from "react-toastify";
 import TopNav from "@/components/Admin/SideNav";
 import {

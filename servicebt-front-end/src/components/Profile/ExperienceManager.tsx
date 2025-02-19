@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import Loading from '../Shared/Loading';
-import apiClient from '@/app/lib/apiClient';
+import apiClient from '@/app/api/apiClient';
 // import { useUserStore } from '@/store/userStore';
 
 interface Experience {

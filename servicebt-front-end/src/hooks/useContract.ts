@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import apiClient from '@/app/lib/apiClient';
+import apiClient from '@/app/api/apiClient';
 
 interface Milestone {
   milestone_id: number;

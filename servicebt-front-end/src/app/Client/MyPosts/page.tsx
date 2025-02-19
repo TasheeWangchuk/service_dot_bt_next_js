@@ -9,7 +9,7 @@ import Navbar from '@/components/NavBar/NavBar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import apiClient from '@/app/lib/apiClient';
+import apiClient from '@/app/api/apiClient';
 import { useRouter } from 'next/navigation';
 import ReactSelect from 'react-select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";

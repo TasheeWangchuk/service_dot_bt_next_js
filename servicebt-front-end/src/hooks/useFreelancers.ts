@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { FreelancerProfile } from '@/types/FindFreelancer';
-import apiClient from '@/app/lib/apiClient';
+import apiClient from '@/app/api/apiClient';
 
 
 export const useFreelancers = () => {

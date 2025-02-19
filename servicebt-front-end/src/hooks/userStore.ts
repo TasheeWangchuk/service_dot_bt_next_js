@@ -96,7 +96,7 @@
 // );
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import apiClient from "@/app/lib/apiClient";
+import apiClient from "@/app/api/apiClient";
 
 // Define User Profile Type
 interface UserProfile {

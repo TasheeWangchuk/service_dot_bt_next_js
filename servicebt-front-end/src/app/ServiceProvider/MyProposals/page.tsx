@@ -16,7 +16,7 @@ import {
   AlertCircle
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import apiClient from "@/app/lib/apiClient";
+import apiClient from "@/app/api/apiClient";
 import Navbar from "@/components/NavBar/NavBar";
 import { ToastContainer, toast } from "react-toastify";
 import Loading from "@/components/Shared/Loading";

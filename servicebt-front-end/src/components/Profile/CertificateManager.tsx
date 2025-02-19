@@ -208,7 +208,7 @@ import { PlusCircle, X, Trash2, Award } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Card } from '../ui/card';
-import apiClient from '@/app/lib/apiClient';
+import apiClient from '@/app/api/apiClient';
 import { toast } from '@/hooks/use-toast';
 
 interface Certificate {

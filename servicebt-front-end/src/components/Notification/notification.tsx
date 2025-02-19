@@ -176,7 +176,7 @@ import {
   PopoverTrigger,
 } from "../../components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import apiClient from "@/app/lib/apiClient";
+import apiClient from "@/app/api/apiClient";
 import { cn } from "@/lib/utils";
 
 interface Notification {

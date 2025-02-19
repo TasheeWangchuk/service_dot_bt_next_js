@@ -12,9 +12,12 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ title, items, renderIte
   <section className="bg-white rounded-xl shadow-sm p-6">
     <h2 className="text-xl font-semibold text-gray-800 mb-4">{title}</h2>
     <div className="space-y-4">
-      {items.map((item, index) => renderItem(item, index))}
+      {items.length > 0 ? (
+        items.map((item, index) => renderItem(item, index))
+      ) : (
+        <p className="text-gray-500 italic">No {title.toLowerCase()} entries yet</p>
+      )}
     </div>
   </section>
 );
-
 export default ProfileSection;

@@ -8,7 +8,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ArrowLeft, Mail } from 'lucide-react';
 import Link from 'next/link';
-import apiClient from '../../lib/apiClient';
+import apiClient from '../../api/apiClient';
 
 const PasswordReset = () => {
   const [email, setEmail] = useState('');

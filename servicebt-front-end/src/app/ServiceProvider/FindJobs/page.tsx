@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Search, Briefcase, Clock, MapPin, DollarSign, Users, AlertCircle, Send } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import apiClient from '@/app/lib/apiClient';
+import apiClient from '@/app/api/apiClient';
 import Navbar from '@/components/NavBar/NavBar';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
