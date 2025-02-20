@@ -13,8 +13,8 @@ export const useUserCounts = () => {
           const users = response.data;
   
           // Debug logging for all users' roles
-          users.forEach((user: { user_id: any; role: any; }) => {
-            console.log(`User ID ${user.user_id} - Role: "${user.role}" - Type: ${typeof user.role}`);
+          users.forEach((users: { user_id: any; role: any; }) => {
+            console.log(`User ID ${users.user_id} - Role: "${users.role}" - Type: ${typeof users.role}`);
           });
   
           const freelancers = users.filter((user: { role: string; }) => 

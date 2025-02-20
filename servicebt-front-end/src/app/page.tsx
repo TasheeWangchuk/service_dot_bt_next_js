@@ -7,7 +7,10 @@ import Categories from '@/components/Hero/Category';
 import Portfolio from '@/components/Hero/portfolio';
 // import HeroTwo from '@/app/components/Landing/HeroTwo';
 import Sidebar from '@/components/Hero/Sidebar';
-//import LoadingPage from "./components/Loading/loadingPage";
+import TabSection from "@/components/AboutUsBox/TabSection";
+import Loading from "@/components/Shared/Loading";
+import Image from 'next/image';
+
 
 const LandingPage: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -42,10 +45,11 @@ const LandingPage: React.FC = () => {
       {/* Main Sections */}
       <Hero />
       <Categories />
-      <Portfolio />
-      {/* Footer */}
+      {/* <Portfolio /> */}
+  
       <Footer />
-    </div></div>
+    </div>
+  </div>
   );
 };
 

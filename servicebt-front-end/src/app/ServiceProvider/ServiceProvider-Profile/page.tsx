@@ -98,9 +98,9 @@ const ProfilePage = () => {
           
           <div className="flex-1 text-center md:text-left">
             <h1 className="text-xl md:text-2xl font-bold text-gray-700">
-              {first_name} {last_name} <span className="text-gray-500 text-sm">@ {username}</span>
+              {first_name} {last_name} <span className="text-orange-500 text-sm">@ {username}</span>
             </h1>
-            <p className="text-black text-sm font-semibold md:text-lg">{profile? profile.headline || "":""}</p>
+            <p className="text-black text-sm font-bold md:text-lg">{profile? profile.headline || "":""}</p>
             <div className="flex items-center gap-2 text-gray-700 text-sm mt-2">
               <MapPin className="w-4 h-4" /> 
               <span>{profile? profile.address || "Location not provided":"Location not provided"}</span>
@@ -160,7 +160,7 @@ const ProfilePage = () => {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         <section id="overview" className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-xl font-semibold text-gray-800">About Me</h2>
+          <h2 className="text-xl font-bold text-gray-800">About Me</h2>
           <p className="text-gray-600 leading-relaxed mt-2">
             {profile?profile.bio || "No bio available.":""}
           </p>
@@ -168,27 +168,27 @@ const ProfilePage = () => {
         
 
         <section id="Skills" className="bg-white rounded-xl shadow-sm p-6">
-          {/* <h2 className="text-xl font-semibold text-gray-800 mb-4">Services</h2>
+          {/* <h2 className="text-xl font-bold text-gray-800 mb-4">Services</h2>
           <ServicesManager /> */}
           <div className="mt-4 mb-4">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Skills</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Skills</h2>
           <SkillsManager/></div>
         </section>
 
         <section id="Experience" className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Experience</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Experience</h2>
           <ExperienceManager/>
         </section>
         <section id="portfolio" className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Portfolio</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Portfolio</h2>
           <Portfolio />
         </section>
         <section id="Certificates" className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Certificates</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Certificates</h2>
           <CertificateManager/>
         </section>
         <section id="Education" className="bg-white rounded-xl shadow-sm p-6">
-        <h2 className="text-xl font-semibold text-gray-800">Education</h2>
+        <h2 className="text-xl font-bold text-gray-800">Education</h2>
         <div><EducationManager/></div>
         </section>
       </main>

@@ -5,21 +5,21 @@ const TabSection = () => {
       <Tab.List className="flex space-x-4">
         <Tab
           className={({ selected }) =>
-            `px-4 py-2 rounded ${selected ? 'bg-orange-500 text-gray-100' : 'bg-gray-100'}`
+            `px-4 py-2 rounded ${selected ? 'bg-orange-500 text-gray-100 border-transparent' : 'bg-gray-100'}`
           }
         >
           Services
         </Tab>
         <Tab
           className={({ selected }) =>
-            `px-4 py-2 rounded ${selected ? 'bg-orange-500 text-gray-100' : 'bg-gray-100'}`
+            `px-4 py-2 rounded ${selected ? 'bg-orange-500 text-gray-100 border-transparent' : 'bg-gray-100'}`
           }
         >
           Vision
         </Tab>
         <Tab
           className={({ selected }) =>
-            `px-4 py-2 rounded ${selected ? 'bg-orange-500 text-gray-100' : 'bg-gray-100'}`
+            `px-4 py-2 rounded ${selected ? 'bg-orange-500 text-gray-100 border-transparent' : 'bg-gray-100'}`
           }
         >
           Our Team

@@ -10,7 +10,7 @@ interface Tokens {
 
 interface User {
   email: string;
-  role: string;
+  role: "Freelancer" | "Client" | "Admin";
   username: string;
 }
 
@@ -64,6 +64,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const login = async (email: string, password: string) => {
     try {
       setAuthState((prev) => ({ ...prev, isLoading: true, error: null }));
+
       const response = await fetch(`https://service-bhutan-api-o2oc.onrender.com/api/v1/users/login/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -87,7 +88,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         error: null,
         isLoggedIn: true,
       });
-      router.push("/");
+
+      // Redirect based on role
+      switch (data.user.role) {
+        case "Freelancer":
+          router.push("/");
+          break;
+        case "Client":
+          router.push("/");
+          break;
+        case "Administrator":
+          router.push("/Admin/Dashboard");
+          break;
+        default:
+          router.push("/");
+          break;
+      }
     } catch (error: any) {
       setAuthState((prev) => ({
         ...prev,
@@ -120,11 +136,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         error: null,
         isLoggedIn: false,
       });
-      
+
       if (message) {
         toast.info(message);
       }
-      
+
       router.push("/login");
     }
   };
@@ -187,6 +203,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
+// Custom hook to access auth context
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) throw new Error("useAuth must be used within an AuthProvider");

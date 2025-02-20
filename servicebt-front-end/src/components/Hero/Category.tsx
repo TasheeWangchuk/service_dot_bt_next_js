@@ -1,67 +1,114 @@
 "use client";
+import React, { useState, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { toast } from "react-toastify";
+import apiClient from "@/app/api/apiClient";
+import { useAuth } from "@/app/context/AuthContext";
 
-import React, { useState } from "react";
-
-interface Category {
-  title: string;
-  img: string;
+interface JobCategory {
+  id: number;
+  category_name: string;
+  category_picture?: string;
 }
 
 const Categories: React.FC = () => {
-  const [categories] = useState<Category[]>([
-    { title: "Graphic & Design", img: "/illust.jpg" },
-    { title: "Cartoon Animation", img: "/animation.jpg" },
-    { title: "Illustration", img: "/illust.jpg" },
-    { title: "Flyers & Vouchers", img: "/marketing.jpg" },
-    { title: "Logo Design", img: "/logo_design.jpg" },
-    { title: "Social Graphics", img: "/vid_edit.jpg" },
-    { title: "Article Writing", img: "/writing.jpg" },
-    { title: "Video Editing", img: "/vid_edit.jpg" },
-  ]);
+  const { isLoggedIn } = useAuth();
+  const [categories, setCategories] = useState<JobCategory[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
 
-  const handleMoreCategories = () => {
-    alert("More categories coming soon!");
-    // Navigate or load more categories dynamically
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetchCategories();
+    }
+  }, [isLoggedIn]);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await apiClient.get(`/api/v1/job-categories/`);
+      setCategories(response.data);
+    } catch (error) {
+      toast.error("Failed to fetch job categories");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
+  const totalPages = Math.ceil(categories.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const displayedCategories = categories.slice(startIndex, startIndex + itemsPerPage);
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
+
+  if (!isLoggedIn) return null;
+
   return (
-    <section id="category" className="relative py-10 ml-10 mr-10 ">
-
-      {/* Content */}
-      <div className="relative max-w-6xl mx-auto text-center z-10">
-        <h2 className="text-3xl font-extrabold text-center mb-10 text-black">
-          Choose Different <span className="text-orange-500">Category</span>
-        </h2>
-
-        {/* Categories Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-          {categories.map((category, index) => (
-            <div
-              key={index}
-              className="relative group rounded-lg shadow-lg overflow-hidden cursor-pointer transform hover:scale-105 transition-transform duration-300"
-            >
-              <img
-                src={category.img}
-                alt={category.title}
-                className="w-full h-48 object-cover"
-              />
-              <div className="absolute inset-0 bg-black opacity-50 group-hover:opacity-70 transition-opacity duration-300"></div>
-              <h3 className="absolute inset-x-0 bottom-4 text-center text-white font-semibold text-lg">
-                {category.title}
-              </h3>
+    <div className="container mx-auto p-4 max-w-7xl">
+      <div className="">
+        <h1 className="text-4xl text-center font-extrabold text-orange-500 mb-8 mt-4">
+          Job Categories
+        </h1>
+        
+        {isLoading ? (
+          <div className="flex justify-center py-20">
+            <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
+          </div>
+        ) : categories.length === 0 ? (
+          <p className="text-center text-gray-500 py-20">No categories available</p>
+        ) : (
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {displayedCategories.map((category, index) => (
+                <Card key={category.id || index} className="transform transition-all duration-300 hover:scale-105 bg-white/60 backdrop-blur-lg border border-white/20">
+                  <CardContent className="p-0">
+                    <div className="relative group">
+                      <img
+                        src={category.category_picture || "/marketing.jpg"}
+                        alt={category.category_name}
+                        className="w-full h-40 object-cover rounded-t-lg"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    </div>
+                    <div className="p-4">
+                      <h2 className="text-xl font-semibold text-gray-800">
+                        {category.category_name || "Untitled Category"}
+                      </h2>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
-          ))}
-        </div>
 
-        {/* More Categories Button */}
-        <button
-          onClick={handleMoreCategories}
-          className="mt-8 px-6 py-2 bg-orange-500 text-white font-semibold rounded-full hover:bg-orange-600 transition duration-300"
-        >
-          More Categories
-        </button>
+            <div className="flex justify-center items-center gap-4 mt-6">
+              <Button
+                variant="outline"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="bg-white/60 backdrop-blur-sm hover:bg-white/80"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </Button>
+              <span className="text-lg font-medium">
+                Page {currentPage} of {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="bg-white/60 backdrop-blur-sm hover:bg-white/80"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
-    </section>
+    </div>
   );
 };
 

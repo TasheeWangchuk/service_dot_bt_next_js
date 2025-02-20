@@ -1,85 +1,84 @@
 "use client";
-import React, { useState } from 'react';
-import { PlusCircle, Pencil, Trash2, GraduationCap, Building2, Calendar, Award } from 'lucide-react';
+import React, { useState } from "react";
+import { PlusCircle, Pencil, Trash2, GraduationCap, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-const EducationManager = () => {
-  interface Education {
-    id: number;
-    type: string;
-    title: string;
-    institution: string;
-    startYear: string;
-    endYear: string;
-    grade: string;
-    achievements: string;
-  }
-  
+interface Education {
+  id: number;
+  country: string;
+  university: string;
+  degree: string;
+  start_date: number;
+  end_date?: number | string;
+  grade?: string;
+  achievements?: string;
+}
+
+interface FormState {
+  country: string;
+  university: string;
+  degree: string;
+  start_date: string | number;
+  end_date?: string | number;
+  grade?: string;
+  achievements?: string;
+}
+
+const EducationManager: React.FC = () => {
   const [educations, setEducations] = useState<Education[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [formData, setFormData] = useState({
-    type: 'degree', 
-    title: '',
-    institution: '',
-    startYear: '',
-    endYear: '',
-    grade: '',
-    achievements: ''
+  const [formData, setFormData] = useState<FormState>({
+    country: "",
+    university: "",
+    degree: "",
+    start_date: "",
+    end_date: "",
+    grade: "",
+    achievements: "",
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const newEducation: Education = {
+      id: editingId ?? Date.now(),
+      country: formData.country,
+      university: formData.university,
+      degree: formData.degree,
+      start_date: Number(formData.start_date),
+      end_date: formData.end_date ? Number(formData.end_date) : undefined,
+      grade: formData.grade,
+      achievements: formData.achievements,
+    };
+
     if (editingId !== null) {
-      setEducations(prev =>
-        prev.map(edu => edu.id === editingId ? { ...formData, id: editingId } : edu)
-      );
+      setEducations((prev) => prev.map((edu) => (edu.id === editingId ? newEducation : edu)));
       setEditingId(null);
     } else {
-      setEducations(prev => [...prev, { ...formData, id: Date.now() }]);
+      setEducations((prev) => [...prev, newEducation]);
     }
-    setIsAddModalOpen(false);
-    setFormData({
-      type: 'degree',
-      title: '',
-      institution: '',
-      startYear: '',
-      endYear: '',
-      grade: '',
-      achievements: ''
-    });
-  };
 
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'degree':
-        return <GraduationCap className="w-6 h-6" />;
-      case 'school':
-        return <Building2 className="w-6 h-6" />;
-      // case 'certificate':
-      //   return <Award className="w-6 h-6" />;
-      default:
-        return <GraduationCap className="w-6 h-6" />;
-    }
+    setIsAddModalOpen(false);
+    setFormData({ country: "", university: "", degree: "", start_date: "", end_date: "", grade: "", achievements: "" });
   };
 
   return (
     <div className="w-full bg-gray-50 min-h-screen">
       <div className="w-full">
         <div className="flex justify-between items-center mb-8">
-          {/* <h2 className="text-3xl font-bold text-gray-800">Education</h2>  */}
-           <Button 
+          <Button
             onClick={() => setIsAddModalOpen(true)}
             className="text-orange-500 hover:text-orange-700 bg-transparent"
           >
@@ -93,46 +92,38 @@ const EducationManager = () => {
             <GraduationCap className="w-16 h-16 mx-auto mb-4 text-blue-500 opacity-50" />
             <h3 className="text-xl font-semibold mb-2">No Education Added Yet</h3>
             <p className="text-gray-500 mb-6">Add your educational background to showcase your qualifications</p>
-            <Button 
-              onClick={() => setIsAddModalOpen(true)}
-              variant="outline"
-              className="mx-auto"
-            >
+            <Button onClick={() => setIsAddModalOpen(true)} variant="outline" className="mx-auto">
               Add Education Details
             </Button>
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {educations.map(education => (
+            {educations.map((education) => (
               <Card key={education.id} className="bg-white hover:shadow-lg transition-shadow duration-300">
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-4">
                     <div className="p-2 bg-blue-50 rounded-lg">
-                      {getTypeIcon(education.type)}
+                      <GraduationCap className="w-6 h-6" />
                     </div>
-                    <Badge variant="outline" className="capitalize">
-                      {education.type}
-                    </Badge>
+                    <Badge variant="outline">{education.country}</Badge>
                   </div>
-                  
-                  <h3 className="text-xl font-semibold mb-2 text-gray-800">{education.title}</h3>
-                  <p className="text-blue-600 font-medium mb-3">{education.institution}</p>
-                  
+
+                  <h3 className="text-xl font-semibold mb-2 text-gray-800">{education.degree}</h3>
+                  <p className="text-blue-600 font-medium mb-3">{education.university}</p>
+
                   <div className="flex items-center text-gray-500 mb-3">
                     <Calendar className="w-4 h-4 mr-2" />
-                    <span>{education.startYear} - {education.endYear || 'Present'}</span>
+                    <span>{education.start_date} - {education.end_date || "Present"}</span>
                   </div>
-                  
+
                   {education.grade && (
                     <p className="text-gray-600 mb-2">
                       <span className="font-medium">Grade:</span> {education.grade}
                     </p>
                   )}
-                  
-                  {education.achievements && (
-                    <p className="text-gray-600 mt-3 line-clamp-2">{education.achievements}</p>
-                  )}
-                  
+
+                  {education.achievements && <p className="text-gray-600 mt-3 line-clamp-2">{education.achievements}</p>}
+
                   <div className="mt-4 pt-4 border-t flex justify-end gap-2">
                     <Button
                       variant="ghost"
@@ -147,10 +138,10 @@ const EducationManager = () => {
                       <Pencil className="w-4 h-4" />
                     </Button>
                     <Button
-                      variant="ghost"
+                      // variant="ghost"
                       size="sm"
-                      className="text-gray-600 hover:text-red-600"
-                      onClick={() => setEducations(prev => prev.filter(edu => edu.id !== education.id))}
+                      className="text-orange-500 bg-transparent border border-gray-300 hover:text-orange-600"
+                      onClick={() => setEducations((prev) => prev.filter((edu) => edu.id !== education.id))}
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -164,115 +155,39 @@ const EducationManager = () => {
         <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
           <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
-              <DialogTitle className="text-2xl">
-                {editingId ? 'Edit Education' : 'Add Education'}
-              </DialogTitle>
+              <DialogTitle className="text-2xl">{editingId ? "Edit Education" : "Add Education"}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Type</label>
-                <select
-                  name="type"
-                  value={formData.type}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded focus:ring-2 focus:ring-orange-500"
-                  required
-                >
-                  <option value="degree">Degree</option>
-                  <option value="school">School</option>
-                  {/* <option value="certificate">Certificate</option> */}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  {formData.type === 'degree' ? 'Degree Name' : 
-                   formData.type === 'school' ? 'Class/Grade' : 'Certificate Name'}
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded focus:ring-2 focus:ring-orange-500"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  {formData.type === 'certificate' ? 'Issuing Organization' : 'Institution Name'}
-                </label>
-                <input
-                  type="text"
-                  name="institution"
-                  value={formData.institution}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded focus:ring-2 focus:ring-orange-500"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Start Year</label>
+              {["country", "university", "degree"].map((field) => (
+                <div key={field}>
+                  <label className="block text-sm font-medium mb-1">{field.charAt(0).toUpperCase() + field.slice(1)}</label>
                   <input
                     type="text"
-                    name="startYear"
-                    value={formData.startYear}
+                    name={field}
+                    value={(formData as any)[field]}
                     onChange={handleInputChange}
-                    className="w-full p-2 border rounded focus:ring-2 focus:ring-orange-500"
+                    className="w-full p-2 border rounded"
                     required
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">End Year</label>
-                  <input
-                    type="text"
-                    name="endYear"
-                    value={formData.endYear}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border rounded focus:ring-2 focus:ring-orange-500"
-                    placeholder="Or leave empty if ongoing"
-                  />
-                </div>
+              ))}
+
+              <div className="grid grid-cols-2 gap-4">
+                {["start_date", "end_date"].map((field) => (
+                  <div key={field}>
+                    <label className="block text-sm font-medium mb-1">{field.replace("_", " ").toUpperCase()}</label>
+                    <input
+                      type="number"
+                      name={field}
+                      value={(formData as any)[field] || ""}
+                      onChange={handleInputChange}
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+                ))}
               </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-1">Grade/Score (Optional)</label>
-                <input
-                  type="text"
-                  name="grade"
-                  value={formData.grade}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded focus:ring-2 focus:ring-orange-500"
-                  placeholder="e.g., percentage %, A+, First Class"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1">Achievements/Description (Optional)</label>
-                <textarea
-                  name="achievements"
-                  value={formData.achievements}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded focus:ring-2 focus:ring-orange-500 h-24"
-                  placeholder="List any notable achievements, awards, or additional information"
-                />
-              </div>
-
-              <div className="flex justify-end gap-2 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setIsAddModalOpen(false)}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" className="bg-orange-600 hover:bg-orange-700">
-                  {editingId ? 'Save Changes' : 'Add Education'}
-                </Button>
-              </div>
+              <Button  className="bg-orange-500 hover:bg-orange-600" type="submit">{editingId ? "Save Changes" : "Add Education"}</Button>
             </form>
           </DialogContent>
         </Dialog>

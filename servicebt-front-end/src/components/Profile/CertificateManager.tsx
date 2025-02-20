@@ -1,485 +1,162 @@
-// import React, { useState } from 'react';
-// import { PlusCircle, X, Trash2, Award } from 'lucide-react';
-// import { Button } from "@/components/ui/button";
-// import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-// import { Card } from '../ui/card';
-// import apiClient from '@/app/lib/apiClient';
-
-// const CertificateManager = () => {
-//   const [certificates, setCertificates] = useState<Array<{
-//     id: number;
-//     title: string;
-//     issuer: string;
-//     issueDate: string;
-//     image: File | null;
-//     imagePreview: string | null;
-//   }>>([]);
-
-//   const [showAddModal, setShowAddModal] = useState(false);
-//   const [showImageModal, setShowImageModal] = useState(false);
-//   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-//   const [newCertificate, setNewCertificate] = useState<{
-//     title: string;
-//     issuer: string;
-//     issueDate: string;
-//     image: File | null;
-//     imagePreview: string | null;
-//   }>({
-//     title: '',
-//     issuer: '',
-//     issueDate: '',
-//     image: null,
-//     imagePreview: null
-//   });
-
-//   const handleInputChange = (e: { target: { name: any; value: any; }; }) => {
-//     const { name, value } = e.target;
-//     setNewCertificate(prev => ({
-//       ...prev,
-//       [name]: value
-//     }));
-//   };
-
-//   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     const file = e.target.files ? e.target.files[0] : null;
-//     if (file) {
-//       setNewCertificate(prev => ({
-//         ...prev,
-//         image: file,
-//         imagePreview: URL.createObjectURL(file)
-//       }));
-//     }
-//   };
-
-//   const handleSubmit = (e: { preventDefault: () => void; }) => {
-//     e.preventDefault();
-//     if (!newCertificate.title || !newCertificate.issuer || !newCertificate.issueDate || !newCertificate.image) {
-//       alert('Please fill all fields');
-//       return;
-//     }
-
-//     setCertificates(prev => [...prev, { ...newCertificate, id: Date.now() }]);
-//     setNewCertificate({
-//       title: '',
-//       issuer: '',
-//       issueDate: '',
-//       image: null,
-//       imagePreview: null
-//     });
-//     setShowAddModal(false);
-//   };
-
-//   const handleDelete = (id: any) => {
-//     setCertificates(prev => prev.filter(cert => cert.id !== id));
-//   };
-
-//   const handleImageClick = (imageUrl: string | null) => {
-//     setSelectedImage(imageUrl);
-//     setShowImageModal(true);
-//   };
-
-//   return (
-//     <div className="w-full ">
-//       <div className="flex justify-between items-center mb-6">
-//         {/* <h1 className="text-2xl font-bold">Certificates</h1> */}
-//         <Button 
-//           onClick={() => setShowAddModal(true)}
-//           className="inline-flex items-center px-4 py-2 text-orange-500 bg-white rounded-lg hover:text-orange-600"
-//         >
-//           <PlusCircle className="w-4 h-4 mr-2" />
-//           Add
-//         </Button>
-//       </div>
-
-//       {certificates.length === 0 ? (
-//         <Card className="p-12 text-center bg-white border-dashed border-2">
-//             <Award className="w-16 h-16 mx-auto mb-4 text-blue-500 opacity-50" />
-//             <h3 className="text-xl font-semibold mb-2">No Certificates Added Yet</h3>
-//             <p className="text-gray-500 mb-6">Add your Certificates here to showcase your crediability</p>
-//             <Button 
-//               onClick={() => setShowAddModal(true)}
-//               variant="outline"
-//               className="mx-auto"
-//             >
-//               Add Certificate
-//             </Button>
-//           </Card>
-//       ) : (
-//         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-//           {certificates.map(cert => (
-//             <div key={cert.id} className="bg-white rounded-lg shadow p-4">
-//               <div 
-//                 className="relative w-full h-48 mb-4 cursor-pointer"
-//                 onClick={() => handleImageClick(cert.imagePreview)}
-//               >
-//                 <img
-//                   src={cert.imagePreview || ''}
-//                   alt={cert.title}
-//                   className="w-full h-full object-cover rounded"
-//                 />
-//               </div>
-//               <h3 className="font-bold text-lg mb-1">{cert.title}</h3>
-//               <p className="text-gray-600 mb-1">{cert.issuer}</p>
-//               <p className="text-gray-500 mb-2">{cert.issueDate}</p>
-//               <button
-//                 onClick={() => handleDelete(cert.id)}
-//                 className="flex items-center gap-2 text-red-500 hover:text-red-600"
-//               >
-//                 <Trash2 className="w-4 h-4" />
-//                 Delete
-//               </button>
-//             </div>
-//           ))}
-//         </div>
-//       )}
-
-//       <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
-//         <DialogContent className="sm:max-w-[425px]">
-//           <DialogHeader>
-//             <DialogTitle>Add New Certificate</DialogTitle>
-//           </DialogHeader>
-//           <form onSubmit={handleSubmit} className="space-y-4">
-//             <div>
-//               <label className="block text-sm font-medium mb-1">Title</label>
-//               <input
-//                 type="text"
-//                 name="title"
-//                 value={newCertificate.title}
-//                 onChange={handleInputChange}
-//                 className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
-//               />
-//             </div>
-//             <div>
-//               <label className="block text-sm font-medium mb-1">Issuer</label>
-//               <input
-//                 type="text"
-//                 name="issuer"
-//                 value={newCertificate.issuer}
-//                 onChange={handleInputChange}
-//                 className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
-//               />
-//             </div>
-//             <div>
-//               <label className="block text-sm font-medium mb-1">Issue Date</label>
-//               <input
-//                 type="date"
-//                 name="issueDate"
-//                 value={newCertificate.issueDate}
-//                 onChange={handleInputChange}
-//                 className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
-//               />
-//             </div>
-//             <div>
-//               <label className="block text-sm font-medium mb-1">Certificate Image</label>
-//               <input
-//                 type="file"
-//                 accept="image/*"
-//                 onChange={handleImageChange}
-//                 className="w-full p-2 border rounded"
-//               />
-//             </div>
-//             <div className="flex justify-end gap-2">
-//               <Button type="button" variant="outline" onClick={() => setShowAddModal(false)}>
-//                 Cancel
-//               </Button>
-//               <Button className='bg-orange-500 hover:bg-orange-600' type="submit">Add Certificate</Button>
-//             </div>
-//           </form>
-//         </DialogContent>
-//       </Dialog>
-
-//       <Dialog open={showImageModal} onOpenChange={setShowImageModal}>
-//         <DialogContent className="sm:max-w-[90vw] h-[90vh]">
-//           <img
-//             src={selectedImage || ''}
-//             alt="Certificate full view"
-//             className="w-full h-full object-contain"
-//           />
-//         </DialogContent>
-//       </Dialog>
-//     </div>
-//   );
-// };
-
-// export default CertificateManager;
 "use client";
-import React, { useState, useEffect } from 'react';
-import { PlusCircle, X, Trash2, Award } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Card } from '../ui/card';
-import apiClient from '@/app/api/apiClient';
-import { toast } from '@/hooks/use-toast';
+import { Plus, Pencil, Trash2, X, Loader2, ImagePlus } from "lucide-react";
+import { toast } from "react-toastify";
+import apiClient from "@/app/api/apiClient";
 
 interface Certificate {
   id: number;
   certificate_title: string;
+  certificate_picture: string;
   certificate_issuer: string;
   issue_date: string;
-  certificate_file: string;
 }
 
-interface NewCertificate {
-  title: string;
-  issuer: string;
-  issueDate: string;
-  image: File | null;
-  imagePreview: string | null;
-}
-
-const CertificateManager = () => {
+const Portfolio = () => {
   const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showImageModal, setShowImageModal] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [newCertificate, setNewCertificate] = useState<NewCertificate>({
-    title: '',
-    issuer: '',
-    issueDate: '',
-    image: null,
-    imagePreview: null
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
+  const [selectedCertificate, setSelectedCertificate] = useState<Certificate | null>(null);
+  const [viewImage, setViewImage] = useState<string | null>(null);
+  const [formData, setFormData] = useState({
+    certificate_title: "",
+    certificate_picture: null as File | null,
+    certificate_issuer: "",
+    issue_date: "",
   });
 
-  // Fetch certificates on component mount
   useEffect(() => {
     fetchCertificates();
   }, []);
 
   const fetchCertificates = async () => {
     try {
-      setIsLoading(true);
-      const response = await apiClient.get('/api/v1/certificates/');
+      const response = await apiClient.get("/api/v1/certificates/");
       setCertificates(response.data);
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to fetch certificates",
-        variant: "destructive",
-      });
+      toast.error("Failed to fetch certificates");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setNewCertificate(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files ? e.target.files[0] : null;
-    if (file) {
-      setNewCertificate(prev => ({
-        ...prev,
-        image: file,
-        imagePreview: URL.createObjectURL(file)
-      }));
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFormData((prev) => ({ ...prev, certificate_picture: e.target.files![0] }));
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!newCertificate.title || !newCertificate.issuer || !newCertificate.issueDate || !newCertificate.image) {
-      toast({
-        title: "Validation Error",
-        description: "Please fill all fields",
-        variant: "destructive",
-      });
-      return;
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    const data = new FormData();
+    data.append("certificate_title", formData.certificate_title);
+    data.append("certificate_issuer", formData.certificate_issuer);
+    data.append("issue_date", formData.issue_date);
+    if (formData.certificate_picture) {
+      data.append("certificate_picture", formData.certificate_picture);
     }
 
     try {
-      const formData = new FormData();
-      formData.append('certificate_title', newCertificate.title);
-      formData.append('certificate_issuer', newCertificate.issuer);
-      formData.append('issue_date', newCertificate.issueDate);
-      formData.append('certificate_file', newCertificate.image);
-
-      await apiClient.post('/api/v1/certificates/', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      // Refresh certificates list
-      await fetchCertificates();
-
-      // Reset form and close modal
-      setNewCertificate({
-        title: '',
-        issuer: '',
-        issueDate: '',
-        image: null,
-        imagePreview: null
-      });
-      setShowAddModal(false);
-
-      toast({
-        title: "Success",
-        description: "Certificate added successfully",
-      });
+      if (selectedCertificate) {
+        await apiClient.put(`/api/v1/certificates/${selectedCertificate.id}/`, data);
+        toast.success("Certificate updated successfully");
+      } else {
+        await apiClient.post("/api/v1/certificates/", data);
+        toast.success("Certificate added successfully");
+      }
+      fetchCertificates();
+      handleCloseDialog();
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to add certificate",
-        variant: "destructive",
-      });
+      toast.error(selectedCertificate ? "Failed to update certificate" : "Failed to add certificate");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleDelete = async (id: number) => {
+    if (!window.confirm("Are you sure you want to delete this certificate?")) return;
     try {
-      await apiClient.delete(`/api/v1/certificates/${id}`);
-      await fetchCertificates();
-      toast({
-        title: "Success",
-        description: "Certificate deleted successfully",
-      });
+      await apiClient.delete(`/api/v1/certificates/${id}/`);
+      toast.success("Certificate deleted successfully");
+      setCertificates((prev) => prev.filter((cert) => cert.id !== id));
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to delete certificate",
-        variant: "destructive",
-      });
+      toast.error("Failed to delete certificate");
     }
   };
 
-  const handleImageClick = (imageUrl: string) => {
-    setSelectedImage(imageUrl);
-    setShowImageModal(true);
+  const handleEdit = (certificate: Certificate) => {
+    setSelectedCertificate(certificate);
+    setFormData({
+      certificate_title: certificate.certificate_title,
+      certificate_picture: null,
+      certificate_issuer: certificate.certificate_issuer,
+      issue_date: certificate.issue_date,
+    });
+    setShowDialog(true);
   };
 
-  if (isLoading) {
-    return <div className="w-full p-12 text-center">Loading...</div>;
-  }
+  const handleCloseDialog = () => {
+    setShowDialog(false);
+    setSelectedCertificate(null);
+    setFormData({ certificate_title: "", certificate_picture: null, certificate_issuer: "", issue_date: "" });
+  };
 
   return (
-    <div className="w-full">
+    <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
-        <Button 
-          onClick={() => setShowAddModal(true)}
-          className="inline-flex items-center px-4 py-2 text-orange-500 bg-white rounded-lg hover:text-orange-600"
-        >
-          <PlusCircle className="w-4 h-4 mr-2" />
-          Add
+        <Button className="bg-transparent border border-gray-200 text-orange-500" onClick={() => setShowDialog(true)}>
+          <Plus className="w-4 h-4 mr-2" /> Add Certificate
         </Button>
       </div>
 
-      {certificates.length === 0 ? (
-        <Card className="p-12 text-center bg-white border-dashed border-2">
-          <Award className="w-16 h-16 mx-auto mb-4 text-blue-500 opacity-50" />
-          <h3 className="text-xl font-semibold mb-2">No Certificates Added Yet</h3>
-          <p className="text-gray-500 mb-6">Add your Certificates here to showcase your credibility</p>
-          <Button 
-            onClick={() => setShowAddModal(true)}
-            variant="outline"
-            className="mx-auto"
-          >
-            Add Certificate
-          </Button>
-        </Card>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {certificates.map(cert => (
-            <div key={cert.id} className="bg-white rounded-lg shadow p-4">
-              <div 
-                className="relative w-full h-48 mb-4 cursor-pointer"
-                onClick={() => handleImageClick(cert.certificate_file)}
-              >
-                <img
-                  src={cert.certificate_file}
-                  alt={cert.certificate_title}
-                  className="w-full h-full object-cover rounded"
-                />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {certificates.map((cert) => (
+          <Card key={cert.id}>
+            <img src={cert.certificate_picture} alt={cert.certificate_title} className="w-full h-48 object-cover" />
+            <CardContent>
+              <h2 className="text-xl font-semibold mb-2">{cert.certificate_title}</h2>
+              <p className="text-gray-600">{cert.certificate_issuer}</p>
+              <p className="text-gray-500">{cert.issue_date}</p>
+              <div className="flex justify-end space-x-2 mt-4">
+                <Button size="sm" variant="secondary" onClick={() => handleEdit(cert)}>
+                  <Pencil className="w-4 h-4" />
+                </Button>
+                <Button size="sm" variant="destructive" onClick={() => handleDelete(cert.id)}>
+                  <Trash2 className="w-4 h-4" />
+                </Button>
               </div>
-              <h3 className="font-bold text-lg mb-1">{cert.certificate_title}</h3>
-              <p className="text-gray-600 mb-1">{cert.certificate_issuer}</p>
-              <p className="text-gray-500 mb-2">{cert.issue_date}</p>
-              <button
-                onClick={() => handleDelete(cert.id)}
-                className="flex items-center gap-2 text-red-500 hover:text-red-600"
-              >
-                <Trash2 className="w-4 h-4" />
-                Delete
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
 
-      <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
-        <DialogContent className="sm:max-w-[425px]">
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent>
           <DialogHeader>
-            <DialogTitle>Add New Certificate</DialogTitle>
+            <DialogTitle>{selectedCertificate ? "Edit Certificate" : "Add Certificate"}</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Title</label>
-              <input
-                type="text"
-                name="title"
-                value={newCertificate.title}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Issuer</label>
-              <input
-                type="text"
-                name="issuer"
-                value={newCertificate.issuer}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Issue Date</label>
-              <input
-                type="date"
-                name="issueDate"
-                value={newCertificate.issueDate}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Certificate Image</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="w-full p-2 border rounded"
-              />
-            </div>
-            <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => setShowAddModal(false)}>
-                Cancel
-              </Button>
-              <Button className='bg-orange-500 hover:bg-orange-600' type="submit">
-                Add Certificate
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={showImageModal} onOpenChange={setShowImageModal}>
-        <DialogContent className="sm:max-w-[90vw] h-[90vh]">
-          <img
-            src={selectedImage || ''}
-            alt="Certificate full view"
-            className="w-full h-full object-contain"
-          />
+          <Input name="certificate_title" placeholder="Title" value={formData.certificate_title} onChange={handleInputChange} />
+          <Input type="file" accept="image/*" onChange={handleImageUpload} />
+          <Input name="certificate_issuer" placeholder="Issuer" value={formData.certificate_issuer} onChange={handleInputChange} />
+          <Input type="date" name="issue_date" value={formData.issue_date} onChange={handleInputChange} />
+          <Button onClick={handleSubmit} disabled={isSubmitting}>{isSubmitting ? "Saving..." : "Submit"}</Button>
         </DialogContent>
       </Dialog>
     </div>
   );
 };
 
-export default CertificateManager;
+export default Portfolio;

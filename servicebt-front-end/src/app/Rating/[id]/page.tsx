@@ -40,7 +40,7 @@ const RatingPage = ({ params }: { params: { id: string } }) => {
       router.push('/Contract-list');  
     } catch (err) {
       console.error('Error submitting review:', err);
-      alert('There was an error submitting your review.');
+      alert('you already reviewed .');
     } finally {
       setIsSubmitting(false);
     }
@@ -58,21 +58,21 @@ const RatingPage = ({ params }: { params: { id: string } }) => {
           {[1, 2, 3, 4, 5].map((star) => (
             <StarIcon
               key={star}
-              className={`h-6 w-6 cursor-pointer ${rating >= star ? 'text-yellow-500 fill-yellow-500' : 'text-gray-400'}`}
+              className={`h-6 w-6 cursor-pointer ${rating >= star ? 'text-orange-400 fill-yellow-400' : 'text-gray-400'}`}
               onClick={() => handleRatingChange(star)}
             />
           ))}
         </div>
       </div>
 
-      <div className="mt-4">
+      {/* <div className="mt-4">
         <Textarea
           value={review}
           onChange={handleReviewChange}
           placeholder="Write your review here"
           rows={4}
         />
-      </div>
+      </div> */}
 
       <div className="mt-4">
         <Button onClick={submitReview} disabled={isSubmitting}>

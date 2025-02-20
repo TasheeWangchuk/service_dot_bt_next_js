@@ -175,55 +175,36 @@ const ViewProposalDetail = () => {
     }
 
     return (
-        <div className="min-h-screen ">
+        <div className="min-h-screen bg-gray-50">
             <Navbar />
-            <div className="max-w-3xl mx-auto px-4 py-8">
-                <div className="flex items-center justify-between mb-6">
+            <div className="max-w-4xl mx-auto px-4 py-8">
+                {/* Header Section */}
+                <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center gap-4">
                         <Button
                             variant="ghost"
-                            size="sm"
                             onClick={() => router.push("MyProposals")}
-                            className="text-gray-600"
+                            className="text-gray-600 hover:text-orange-600 hover:bg-orange-50"
                         >
                             <ArrowLeft className="h-4 w-4 mr-2" />
                             Back to Proposals
                         </Button>
-                        {proposal?.status && getStatusBadge(proposal.status as "PENDING" | "APPROVED" | "REJECTED")}
                     </div>
-
-                    {proposal?.status === "PENDING" && (
-                        <div className="flex items-center gap-2">
-                            <Button
-                                variant="outline"
-                                onClick={() => setIsEditing(true)}
-                                className="text-blue-600 border-blue-200 hover:border-blue-300"
-                            >
-                                <Edit2 className="h-4 w-4 mr-2" />
-                                Edit Proposal
-                            </Button>
-                            <Button
-                                variant="outline"
-                                onClick={() => setShowDeleteDialog(true)}
-                                className="text-red-600 border-red-200 hover:border-red-300"
-                            >
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                Delete
-                            </Button>
-                        </div>
-                    )}
+                    {proposal?.status && getStatusBadge(proposal.status as "PENDING" | "APPROVED" | "REJECTED")}
                 </div>
 
-                <div className="bg-white rounded-xl shadow-sm border p-6">
-                    <div className="flex items-start gap-4 pb-6 border-b">
-                    </div>
-
-                    <div className="mt-6 space-y-6">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-gray-50 p-4 rounded-lg">
-                                <div className="flex items-center gap-2 text-gray-600 mb-1">
-                                    <DollarSign className="h-5 w-5" />
-                                    <span className="font-medium">Bid Amount</span>
+                {/* Main Content */}
+                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    {/* Top Section */}
+                    <div className="p-8 border-b border-gray-100">
+                        <div className="grid grid-cols-2 gap-8">
+                            {/* Bid Amount Card */}
+                            <div className="bg-orange-50 rounded-xl p-6">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <div className="p-2 bg-orange-100 rounded-lg">
+                                        <DollarSign className="h-5 w-5 text-orange-600" />
+                                    </div>
+                                    <h3 className="text-lg font-medium text-gray-700">Bid Amount</h3>
                                 </div>
                                 {isEditing ? (
                                     <Input
@@ -233,21 +214,24 @@ const ViewProposalDetail = () => {
                                             ...editedProposal,
                                             bid_amount: Number(e.target.value)
                                         })}
-                                        className="mt-1"
+                                        className="mt-2"
                                     />
                                 ) : (
-                                    <p className="text-2xl font-semibold text-gray-900">
+                                    <p className="text-3xl font-bold text-orange-600">
                                         Nu. {proposal?.bid_amount.toLocaleString()}
                                     </p>
                                 )}
                             </div>
 
-                            <div className="bg-gray-50 p-4 rounded-lg">
-                                <div className="flex items-center gap-2 text-gray-600 mb-1">
-                                    <Calendar className="h-5 w-5" />
-                                    <span className="font-medium">Submitted On</span>
+                            {/* Submission Date Card */}
+                            <div className="bg-gray-50 rounded-xl p-6">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <div className="p-2 bg-gray-100 rounded-lg">
+                                        <Calendar className="h-5 w-5 text-gray-600" />
+                                    </div>
+                                    <h3 className="text-lg font-medium text-gray-700">Submitted On</h3>
                                 </div>
-                                <p className="text-gray-900">
+                                <p className="text-xl font-semibold text-gray-800">
                                     {new Date(proposal?.created_at || "").toLocaleDateString('en-US', {
                                         year: 'numeric',
                                         month: 'long',
@@ -256,123 +240,160 @@ const ViewProposalDetail = () => {
                                 </p>
                             </div>
                         </div>
+                    </div>
 
-                        <div className="space-y-3">
-                            <h3 className="text-lg font-semibold text-gray-900">Cover Letter</h3>
-                            {isEditing ? (
+                    {/* Cover Letter Section */}
+                    <div className="p-8 border-b border-gray-100">
+                        <h3 className="text-xl font-semibold text-gray-800 mb-4">Cover Letter</h3>
+                        {isEditing ? (
+                            <Textarea
+                                value={editedProposal.cover_letter}
+                                onChange={(e) => setEditedProposal({
+                                    ...editedProposal,
+                                    cover_letter: e.target.value
+                                })}
+                                className="min-h-[200px]"
+                            />
+                        ) : (
+                            <div className="bg-gray-50 p-6 rounded-xl">
+                                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                                    {proposal?.cover_letter}
+                                </p>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Skills Section */}
+                    <div className="p-8">
+                        <h3 className="text-xl font-semibold text-gray-800 mb-4">Skills & Expertise</h3>
+                        <div className="flex flex-wrap gap-2">
+                            {proposal?.skills_details.map((skill) => (
+                                <span
+                                    key={skill.skill_id}
+                                    className="px-4 py-2 bg-orange-50 text-orange-600 rounded-full text-sm font-medium"
+                                >
+                                    {skill.name}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    {proposal?.status === "PENDING" && (
+                        <div className="px-8 py-6 bg-gray-50 border-t border-gray-100">
+                            <div className="flex items-center justify-end gap-4">
+                                <Button
+                                    variant="outline"
+                                    onClick={() => setShowDeleteDialog(true)}
+                                    className="text-red-600 border-red-200 hover:bg-red-50"
+                                >
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    Delete Proposal
+                                </Button>
+                                <Button
+                                    onClick={() => setIsEditing(true)}
+                                    className="bg-orange-600 hover:bg-orange-700 text-white"
+                                >
+                                    <Edit2 className="h-4 w-4 mr-2" />
+                                    Edit Proposal
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {/* Dialogs */}
+                <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+                    <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                            <DialogTitle className="text-xl font-semibold text-gray-900">Delete Proposal</DialogTitle>
+                        </DialogHeader>
+                        <div className="py-4">
+                            <p className="text-gray-600">
+                                Are you sure you want to delete this proposal? This action cannot be undone.
+                            </p>
+                        </div>
+                        <DialogFooter>
+                            <Button
+                                variant="outline"
+                                onClick={() => setShowDeleteDialog(false)}
+                                className="w-full sm:w-auto"
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                variant="destructive"
+                                onClick={handleDelete}
+                                className="w-full sm:w-auto"
+                            >
+                                Delete Proposal
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+
+                <Dialog open={isEditing} onOpenChange={setIsEditing}>
+                    <DialogContent className="sm:max-w-[600px]">
+                        <DialogHeader>
+                            <DialogTitle className="text-xl font-semibold text-gray-900">Edit Proposal</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-6 py-4">
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-gray-700">Bid Amount</label>
+                                <Input
+                                    type="number"
+                                    value={editedProposal.bid_amount}
+                                    onChange={(e) => setEditedProposal({
+                                        ...editedProposal,
+                                        bid_amount: Number(e.target.value)
+                                    })}
+                                    className="w-full"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-gray-700">Cover Letter</label>
                                 <Textarea
                                     value={editedProposal.cover_letter}
                                     onChange={(e) => setEditedProposal({
                                         ...editedProposal,
                                         cover_letter: e.target.value
                                     })}
-                                    className="min-h-[150px]"
+                                    className="min-h-[200px]"
                                 />
-                            ) : (
-                                <div className="bg-gray-50 p-4 rounded-lg">
-                                    <p className="text-gray-700 whitespace-pre-wrap">{proposal?.cover_letter}</p>
-                                </div>
-                            )}
-                        </div>
-
-                        <div>
-                            <h3 className="text-lg font-semibold text-gray-900 mb-3">Skills & Expertise</h3>
-                            <div className="flex flex-wrap gap-2">
-                                {proposal?.skills_details.map((skill) => (
-                                    <span
-                                        key={skill.skill_id}
-                                        className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm"
-                                    >
-                                        {skill.name}
-                                    </span>
-                                ))}
                             </div>
-                        </div>
-
-                        {isEditing && (
-                            <div className="flex items-center gap-3 pt-4">
-                                <Button onClick={handleEdit} className="w-full">
-                                    Save Changes
-                                </Button>
-                                <Button
-                                    variant="outline"
-                                    onClick={() => setIsEditing(false)}
-                                    className="w-full"
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-gray-700">Skills</label>
+                                <Select
+                                    value={editedProposal.skills.map(String).join(",")}
+                                    onValueChange={handleSkillsChange}
                                 >
-                                    Cancel
-                                </Button>
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select skills" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {skills.map((skill) => (
+                                            <SelectItem key={skill.skill_id} value={String(skill.skill_id)}>
+                                                {skill.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* Edit and Delete Dialog */}
-                <Dialog open={isEditing || showDeleteDialog} onOpenChange={(open) => {
-                    if (!open) {
-                        setIsEditing(false);
-                        setShowDeleteDialog(false);
-                    }
-                }}>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>{isEditing ? "Edit Proposal" : "Delete Proposal"}</DialogTitle>
-                        </DialogHeader>
-
-                        {isEditing ? (
-                            <div className="space-y-4">
-                                <Input
-                                    value={editedProposal.bid_amount}
-                                    onChange={(e) => setEditedProposal({ ...editedProposal, bid_amount: +e.target.value })}
-                                />
-                                <Textarea
-                                    value={editedProposal.cover_letter}
-                                    onChange={(e) => setEditedProposal({ ...editedProposal, cover_letter: e.target.value })}
-                                    className="min-h-[150px]"
-                                />
-                                <div>
-                                    <label>Skills</label>
-                                    <Select
-                                        value={editedProposal.skills.map(String).join(",")}  // Join array of strings into a single string
-                                        onValueChange={handleSkillsChange} // Handle changes to selected skills
-                                    >
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Select skills" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {skills.map((skill) => (
-                                                <SelectItem key={skill.skill_id} value={String(skill.skill_id)}>
-                                                    {skill.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-                        ) : (
-                            <p className="text-gray-600">
-                                Are you sure you want to delete this proposal? This action cannot be undone.
-                            </p>
-                        )}
+                        </div>
                         <DialogFooter>
-                            {isEditing ? (
-                                <>
-                                    <Button variant="outline" onClick={() => setIsEditing(false)}>
-                                        Cancel
-                                    </Button>
-                                    <Button onClick={handleEdit}>
-                                        Save Changes
-                                    </Button>
-                                </>
-                            ) : (
-                                <>
-                                    <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
-                                        Cancel
-                                    </Button>
-                                    <Button variant="destructive" onClick={handleDelete}>
-                                        Delete Proposal
-                                    </Button>
-                                </>
-                            )}
+                            <Button
+                                variant="outline"
+                                onClick={() => setIsEditing(false)}
+                                className="w-full sm:w-auto"
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                onClick={handleEdit}
+                                className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700"
+                            >
+                                Save Changes
+                            </Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>

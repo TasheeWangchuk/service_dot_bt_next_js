@@ -117,8 +117,8 @@ const JobProposals = () => {
             )}
 
             <div className="flex justify-between items-center mb-8">
-                <h1 className="text-3xl font-bold text-gray-900">Proposals for Job #{id}</h1>
-                <span className="text-gray-500">{proposals.length} Proposals</span>
+                <h1 className="text-3xl font-bold text-orange-500">Proposals for Job #{id}</h1>
+                <span className="text-gray-900 text-sm">{proposals.length} Proposals</span>
             </div>
 
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

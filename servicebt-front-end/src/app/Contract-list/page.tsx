@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Clipboard, Calendar, DollarSign, ExternalLink, Coins, CoinsIcon } from 'lucide-react';
+import { Clipboard, Calendar, DollarSign, ExternalLink, Coins, CoinsIcon, Clock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import apiClient from '@/app/api/apiClient';
@@ -69,12 +69,12 @@ const ContractList = () => {
       case 'COMPLETED':
         return 'bg-green-500';
       case 'CANCELLED':
-        return 'bg-red-500';
+        return 'bg-red-500 ';
       default:
         return 'bg-gray-500';
     }
   };
-
+  
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -99,85 +99,115 @@ const ContractList = () => {
   }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Contracts</h1>
-        <p className="text-gray-500 mt-2">Manage and track all your contracts</p>
-      </div>
+      <div className="p-8 max-w-7xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-orange-600 to-orange-400 bg-clip-text text-transparent">
+            Contracts
+          </h1>
+          <p className="text-gray-600 mt-2 text-lg">
+            Track and manage all your ongoing and completed contracts
+          </p>
+        </div>
 
-      <ScrollArea className="h-[800px] rounded-md">
-        <div className="space-y-4">
-          {contracts.map((contract) => (
-            <Card key={contract.contract_id} className="shadow-sm">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xl font-semibold">
-                  {contract.job_title}
-                </CardTitle>
-                <div className="flex items-center space-x-4">
-                  <Badge 
-                    className={`${getStatusColor(contract.status)} text-white`}
-                  >
-                    {contract.status}
-                  </Badge>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleViewDetails(contract.contract_id)}
-                    className="flex items-center space-x-2"
-                  >
-                    <span>View Details</span>
-                    <ExternalLink className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <Clipboard className="h-4 w-4 text-gray-500" />
-                      <span className="font-medium">Client:</span>
-                      <span>{contract.client_name}</span>
-                      <span className="font-medium">Service Provider:</span>
-                      <span>{contract.freelancer_name}</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Calendar className="h-4 w-4 text-gray-500" />
-                      <span className="font-medium">Duration:</span>
-                      <span>
-                        {formatDate(contract.start_date)} - {formatDate(contract.end_date)}
-                      </span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <CoinsIcon className="h-4 w-4 text-gray-500" />
-                      <span className="font-medium text-orange-500">Total Amount:</span>
-                      <span className='font-semibold'>Nu. {contract.total_amount.toLocaleString()}</span>
+        <ScrollArea className="h-[750px] rounded-xl pr-4">
+          <div className="space-y-6">
+            {contracts.map((contract) => (
+              <Card 
+                key={contract.contract_id} 
+                className="border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200"
+              >
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                  <div className="space-y-1">
+                    <CardTitle className="text-2xl font-bold text-gray-800">
+                      {contract.job_title}
+                    </CardTitle>
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <Clipboard className="h-4 w-4" />
+                      <span>Contract ID: #{contract.contract_id}</span>
                     </div>
                   </div>
-                  
-                  <div className="space-y-2">
-                    <div className="font-medium mb-2">Milestones:</div>
-                    {contract.milestones.map((milestone) => (
-                      <div 
-                        key={milestone.milestone_id}
-                        className="bg-gray-50 p-2 rounded"
-                      >
-                        <div className="flex justify-between items-center">
-                          <span className="font-medium">{milestone.title}</span>
-                          <span>${milestone.amount}</span>
+                  <div className="flex items-center gap-4">
+                    <Badge
+                      className={`${getStatusColor(
+                        contract.status
+                      )} px-4 py-1.5 flex items-center gap-2`}
+                    >
+                      {contract.status}
+                    </Badge>
+                    <Button
+                      onClick={() => handleViewDetails(contract.contract_id)}
+                      className="bg-orange-600 hover:bg-orange-700 text-white"
+                    >
+                      View Details
+                      <ExternalLink className="h-4 w-4 ml-2" />
+                    </Button>
+                  </div>
+                </CardHeader>
+
+                <CardContent>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div className="space-y-4">
+                      <div className="bg-orange-50 rounded-xl p-4 space-y-3">
+                        <div className="flex items-center gap-2 text-gray-700">
+                          <span className="font-medium">Client:</span>
+                          <span className="text-orange-600">{contract.client_name}</span>
                         </div>
-                        <div className="text-sm text-gray-500 mt-1">
-                          Due: {formatDate(milestone.deadline)}
+                        <div className="flex items-center gap-2 text-gray-700">
+                          <span className="font-medium">Service Provider:</span>
+                          <span className="text-orange-600">{contract.freelancer_name}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-5 w-5 text-orange-500" />
+                          <span className="font-medium">Duration:</span>
+                          <span>
+                            {formatDate(contract.start_date)} - {formatDate(contract.end_date)}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <CoinsIcon className="h-5 w-5 text-orange-500" />
+                          <span className="font-medium">Total Amount:</span>
+                          <span className="text-xl font-bold text-orange-600">
+                            Nu. {contract.total_amount.toLocaleString()}
+                          </span>
                         </div>
                       </div>
-                    ))}
+                    </div>
+
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold text-gray-800">Milestones</h3>
+                      <div className="space-y-3">
+                        {contract.milestones.map((milestone) => (
+                          <div
+                            key={milestone.milestone_id}
+                            className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm"
+                          >
+                            <div className="flex justify-between items-center">
+                              <div className="space-y-1">
+                                <h4 className="font-semibold text-gray-800">
+                                  {milestone.title}
+                                </h4>
+                                <div className="flex items-center gap-2 text-sm text-gray-600">
+                                  <Clock className="h-4 w-4" />
+                                  Due: {formatDate(milestone.deadline)}
+                                </div>
+                              </div>
+                              <div className="text-lg font-bold text-orange-600">
+                                Nu. {milestone.amount.toLocaleString()}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </ScrollArea>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </ScrollArea>
+      </div>
     </div>
   );
 };

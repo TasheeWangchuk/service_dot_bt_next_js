@@ -82,7 +82,10 @@ const Hero = () => {
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
 
   return (
-    <div className="relative w-full min-h-screen overflow-hidden">
+    <div className="relative w-full min-h-screen overflow-hidden"  
+    style={{ 
+    height: "125vh",
+    transformOrigin: "top left", }}>
       {/* Video Background */}
       <div className="absolute inset-0">
         <video
