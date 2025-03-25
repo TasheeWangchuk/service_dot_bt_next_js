@@ -1,6 +1,7 @@
 // app/about/page.tsx
 "use client";
 
+
 import Image from 'next/image';
 import FAQAccordion from '@/components/AboutUsBox/FAQAccordion';
 import FeedbackForm from '@/components/AboutUsBox/FeedbackForm';
