@@ -6,7 +6,6 @@ import Footer from "@/components/Shared/Footer";
 import { AiOutlineEdit, AiOutlineSave, AiOutlineMessage } from "react-icons/ai";
 import { BsFillPersonFill } from "react-icons/bs";
 
-// Sample data for client profile
 interface Review {
   id: number;
   clientName: string;
@@ -14,31 +13,37 @@ interface Review {
   comment: string;
 }
 
-interface ClientProfileProps {
-  name: string;
-  description: string;
-  profilePicture: string;
-  numberOfServices: number;
-  reviews: Review[]; // Ensure this is an array
-  email: string;
-  phone: string;
-}
+export default function ClientProfilePage() {
+  // Sample data - in a real app, you would fetch this from an API
+  const [clientData, setClientData] = useState({
+    name: "John Doe",
+    description: "Professional client looking for quality services",
+    profilePicture: "/default-profile.jpg",
+    numberOfServices: 5,
+    email: "john.doe@example.com",
+    phone: "+1234567890",
+    reviews: [
+      {
+        id: 1,
+        clientName: "Service Provider 1",
+        rating: 4,
+        comment: "Great to work with!",
+      },
+      {
+        id: 2,
+        clientName: "Service Provider 2",
+        rating: 5,
+        comment: "Excellent communication and prompt payments.",
+      },
+    ] as Review[],
+  });
 
-const ClientProfile: React.FC<ClientProfileProps> = ({
-  name,
-  description,
-  profilePicture,
-  numberOfServices,
-  reviews = [], // Default to empty array if reviews is not passed
-  email,
-  phone,
-}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [clientInfo, setClientInfo] = useState({
-    name,
-    description,
-    email,
-    phone,
+    name: clientData.name,
+    description: clientData.description,
+    email: clientData.email,
+    phone: clientData.phone,
   });
 
   const handleEdit = () => {
@@ -48,6 +53,10 @@ const ClientProfile: React.FC<ClientProfileProps> = ({
   const handleSave = () => {
     setIsEditing(false);
     // Save the updated info here (e.g., API call)
+    setClientData({
+      ...clientData,
+      ...clientInfo,
+    });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,8 +71,8 @@ const ClientProfile: React.FC<ClientProfileProps> = ({
         {/* Profile Header */}
         <div className="flex items-center space-x-6 mb-6">
           <img
-            src={profilePicture}
-            alt={`${name}'s profile`}
+            src={clientData.profilePicture}
+            alt={`${clientInfo.name}'s profile`}
             className="w-32 h-32 rounded-full border border-gray-200 object-cover"
           />
           <div className="flex-1">
@@ -72,7 +81,7 @@ const ClientProfile: React.FC<ClientProfileProps> = ({
 
             {/* Display services count */}
             <p className="mt-4 text-sm text-gray-600">
-              <strong>{numberOfServices}</strong> services posted
+              <strong>{clientData.numberOfServices}</strong> services posted
             </p>
 
             {/* Editing the profile */}
@@ -120,11 +129,10 @@ const ClientProfile: React.FC<ClientProfileProps> = ({
         <section className="mt-6 p-6 bg-white rounded-lg shadow-sm">
           <h2 className="text-xl font-semibold text-gray-800">Reviews</h2>
           <div className="space-y-4">
-            {/* Default to empty array if no reviews */}
-            {reviews.length === 0 ? (
+            {clientData.reviews.length === 0 ? (
               <p>No reviews yet.</p>
             ) : (
-              reviews.map((review) => (
+              clientData.reviews.map((review) => (
                 <div
                   key={review.id}
                   className="p-4 border rounded-lg shadow-md hover:shadow-lg transition-all"
@@ -173,6 +181,4 @@ const ClientProfile: React.FC<ClientProfileProps> = ({
       </div>
     </div>
   );
-};
-
-export default ClientProfile;
+}
