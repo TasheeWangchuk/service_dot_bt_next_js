@@ -6,17 +6,17 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer, toast}from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 // import ServicesManager from "@/components/profile/SeviceManager";
-import SkillsManager from "@/components/profile/SkillManager";
-import ExperienceManager from "@/components/profile/ExperienceManager";
-import CertificateManager from "@/components/profile/CertificateManager";
-import Portfolio from "@/components/profile/portfolio";
-import apiClient from "@/app/api/apiClient";
+import SkillsManager  from "@/components/Profile/SkillManager";
+import ExperienceManager from "@/components/Profile/ExperienceManager";
+import CertificateManager from "@/components/Profile/CertificateManager"
+import Portfolio from "@/components/Profile/Portfolio";
+// import apiClient from "@/app/api/apiClient";
 import Navbar from "@/components/NavBar/NavBar";
 import Link from "next/link";
-import EducationManager from "@/components/profile/EducationManager";
+import EducationManager from "@/components/Profile/EducationManager";
 import { useUserStore } from "@/hooks/userStore";
 interface UserProfile {
   first_name: string;
@@ -34,7 +34,7 @@ interface UserProfile {
 }
 
 const ProfilePage = () => {
-  const [userData, setUserData] = useState<UserProfile | null>(null);
+  // const [userData, setUserData] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState("overview");
   const { profile, first_name, last_name, phone, username, email, fetchUserData } = useUserStore();
